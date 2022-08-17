@@ -6,6 +6,7 @@ import { createServer } from 'http'
 import { Server } from 'socket.io'
 import LoginUser from './controllers/login'
 import getUsers from './controllers/getUsers'
+import Hello from './controllers/hello'
 
 async function run() {
   const app = express()
@@ -26,7 +27,7 @@ async function run() {
     'mongodb+srv://DaniilVentsov:MongoAdmin53424@quasarapp.ebpoijk.mongodb.net/?retryWrites=true&w=majority'
   )
 
-  app.use([LoginUser, getUsers])
+  app.use([LoginUser, getUsers, Hello])
 
   io.on('connection', (socket) => {
     console.log('a user connected')

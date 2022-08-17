@@ -4,7 +4,7 @@
   "description": "Server for Quasar Mobile App",
   "main": "server.ts",
   "scripts": {
-    "server": "npx ts-node-dev server.ts",
+    "start": "npx ts-node-dev server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Daniil Ventsov <daniil.ventsov@progforce.com>",
