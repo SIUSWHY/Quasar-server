@@ -22,7 +22,9 @@ async function run() {
   app.use(bodyParser.urlencoded({ extended: true }))
   app.use(express.json())
 
-  await mongoose.connect('mongodb://localhost:27017/Quasar')
+  await mongoose.connect(
+    'mongosh "mongodb+srv://quasarapp.ebpoijk.mongodb.net/QuasarApp" --apiVersion 1 --username DaniilVentsov'
+  )
 
   app.use([LoginUser, getUsers])
 
