@@ -23,7 +23,7 @@ async function run() {
   app.use(express.json())
 
   await mongoose.connect(
-    'mongodb+srv://DaniilVentsov:<MongoAdmin53424>@quasarapp.ebpoijk.mongodb.net/?retryWrites=true&w=majority'
+    'mongodb+srv://DaniilVentsov:MongoAdmin53424@quasarapp.ebpoijk.mongodb.net/?retryWrites=true&w=majority'
   )
 
   app.use([LoginUser, getUsers])
