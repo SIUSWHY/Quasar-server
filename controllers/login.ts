@@ -12,7 +12,7 @@ LoginUser.post('/loginUser', async (req, res) => {
     })
     return res.status(200).send({ massege: 'You login. Welcome', user, token })
   } catch (error) {
-    return error.status(400)
+    return res.status(400).send({ error })
   }
 })
 
