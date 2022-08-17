@@ -23,8 +23,13 @@ async function run() {
   app.use(bodyParser.urlencoded({ extended: true }))
   app.use(express.json())
 
+  // DaniilVentsov:MongoAdmin53424@
   await mongoose.connect(
-    'mongodb+srv://DaniilVentsov:MongoAdmin53424@quasarapp.ebpoijk.mongodb.net/QuasarMobileApp?retryWrites=true&w=majority'
+    'mongodb://quasarapp.ebpoijk.mongodb.net/QuasarMobileApp?retryWrites=true&w=majority',
+    {
+      user: process.env.USER,
+      pass: process.env.PASS
+    }
   )
 
   app.use([LoginUser, getUsers, Hello])
