@@ -7,12 +7,17 @@ LoginUser.post('/loginUser', async (req, res) => {
   try {
     const { name, password } = req.body
     const user = await User.findOne({ $and: [{ name }, { password }] })
-    const token = createToken({
-      user
-    })
-    return res.status(200).send({ massege: 'You login. Welcome', user, token })
+    if (user !== null) {
+      const token = createToken({
+        user
+      })
+      return res
+        .status(200)
+        .send({ massege: 'You login. Welcome', user, token })
+    }
+    return res.status(400).send('User not found')
   } catch (error) {
-    return res.status(400).send({ error })
+    console.log(error)
   }
 })
 
