@@ -26,11 +26,7 @@ async function run() {
   // DaniilVentsov:MongoAdmin53424@
   await mongoose
     .connect(
-      'mongodb://quasarapp.ebpoijk.mongodb.net/QuasarMobileApp?retryWrites=true&w=majority',
-      {
-        user: process.env.USER,
-        pass: process.env.PASS
-      }
+      `mongodb+srv://${process.env.USER}:${process.env.PASS}@quasarapp.ebpoijk.mongodb.net/QuasarMobileApp?retryWrites=true&w=majority`
     )
     .then(() => {
       console.log('Connection to the Atlas Cluster is successful!')
