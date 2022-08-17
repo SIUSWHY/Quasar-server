@@ -25,7 +25,12 @@ async function run() {
 
   // DaniilVentsov:MongoAdmin53424@
   await mongoose.connect(
-    `mongodb://${process.env.USER}:${process.env.PASS}@quasarapp.ebpoijk.mongodb.net/QuasarMobileApp?retryWrites=true&w=majority`
+    'mongodb://quasarapp.ebpoijk.mongodb.net/?retryWrites=true&w=majority',
+    {
+      user: process.env.USER,
+      pass: process.env.PASS,
+      dbName: 'QuasarMobileApp'
+    }
   )
 
   app.use([LoginUser, getUsers, Hello])
