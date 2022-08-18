@@ -33,8 +33,7 @@ async function run() {
     })
     .catch((err) => console.error(err))
 
-  app.use([LoginUser, verifyToken, getUsers, Hello])
-  // app.use(verifyToken, getUsers)
+  app.use([LoginUser, getUsers, Hello])
 
   io.on('connection', (socket) => {
     console.log('a user connected')

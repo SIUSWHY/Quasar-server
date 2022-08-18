@@ -4,7 +4,7 @@ import Users from '../models/modelUser'
 import { UserType } from '../types/userType'
 const getUsers = express.Router()
 
-getUsers.get('/users', async (req, res, next) => {
+getUsers.get('/users', verifyToken, async (req, res, next) => {
   // const auth = req.user
 
   const UsersList: UserType[] = await Users
