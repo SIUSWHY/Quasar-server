@@ -1,10 +1,8 @@
 // import jwt from 'jsonwebtoken'
 
 function verifyToken(req: any, _res: any, next: any) {
-  let token = req.headers.authorization
-  let token2 = req.headers
+  let token = req.headers.authorization.split(' ').pop()
   console.log(token)
-  console.log(token2)
   next()
   // try {
   //   let token = req.headers.Authorization.split(' ').pop()
