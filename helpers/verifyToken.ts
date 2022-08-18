@@ -1,22 +1,24 @@
-import jwt from 'jsonwebtoken'
+// import jwt from 'jsonwebtoken'
 
 function verifyToken(req, res, next) {
-  try {
-    let token = req.headers.Authorization.split(' ').pop()
-    console.log(token)
+  let token = req.headers.Authorization.split(' ').pop()
+  console.log(token)
+  // try {
+  //   let token = req.headers.Authorization.split(' ').pop()
+  //   console.log(token)
 
-    // verify a token symmetric - synchronous
-    let decoded = jwt.verify(token, 'JWT_KEY')
+  //   // verify a token symmetric - synchronous
+  //   let decoded = jwt.verify(token, 'JWT_KEY')
 
-    req.user = decoded
+  //   req.user = decoded
 
-    console.log(decoded) // bar
-    next()
-  } catch (error) {
-    return res.status(403).send({
-      errors: [error.message]
-    })
-  }
+  //   console.log(decoded) // bar
+  //   next()
+  // } catch (error) {
+  //   return res.status(403).send({
+  //     errors: [error.message]
+  //   })
+  // }
 }
 
 export default verifyToken

@@ -7,7 +7,6 @@ import { Server } from 'socket.io'
 import LoginUser from './controllers/login'
 import getUsers from './controllers/getUsers'
 import Hello from './controllers/hello'
-import verifyToken from './helpers/verifyToken'
 
 async function run() {
   const app = express()
@@ -18,7 +17,7 @@ async function run() {
     }
     /* options */
   })
-  const port = process.env.PORT || 5000
+  const port = process.env.PORT || 3000
 
   app.use(cors())
   app.use(bodyParser.urlencoded({ extended: true }))
