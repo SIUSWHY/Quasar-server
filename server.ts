@@ -7,6 +7,7 @@ import { Server } from 'socket.io'
 import LoginUser from './controllers/login'
 import getUsers from './controllers/getUsers'
 import Hello from './controllers/hello'
+import verifyToken from './helpers/verifyToken'
 
 async function run() {
   const app = express()
@@ -23,7 +24,6 @@ async function run() {
   app.use(bodyParser.urlencoded({ extended: true }))
   app.use(express.json())
 
-  // DaniilVentsov:MongoAdmin53424@
   await mongoose
     .connect(
       `mongodb+srv://${process.env.USER}:${process.env.PASS}@quasarapp.ebpoijk.mongodb.net/QuasarMobileApp?retryWrites=true&w=majority`
@@ -33,7 +33,8 @@ async function run() {
     })
     .catch((err) => console.error(err))
 
-  app.use([LoginUser, getUsers, Hello])
+  app.use([LoginUser, verifyToken, getUsers, Hello])
+  // app.use(verifyToken, getUsers)
 
   io.on('connection', (socket) => {
     console.log('a user connected')
