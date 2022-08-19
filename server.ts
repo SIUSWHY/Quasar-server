@@ -18,7 +18,7 @@ async function run() {
       //   'http://192.168.88.47:8080',
       //   'https://pet-quasar-app.herokuapp.com'
       // ]
-      origin: false
+      origin: '*'
     }
     /* options */
   })
