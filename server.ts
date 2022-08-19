@@ -13,7 +13,11 @@ async function run() {
   const httpServer = createServer(app)
   const io = new Server(httpServer, {
     cors: {
-      origin: ['http://localhost:8080', 'http://192.168.88.47:8080']
+      origin: [
+        'http://localhost:8080',
+        'http://192.168.88.47:8080',
+        'https://pet-quasar-app.herokuapp.com'
+      ]
     }
     /* options */
   })
