@@ -1,3 +1,7 @@
+import dotenv from 'dotenv'
+
+dotenv.config()
+
 import express from 'express'
 import bodyParser from 'body-parser'
 import mongoose from 'mongoose'
@@ -13,11 +17,6 @@ async function run() {
   const httpServer = createServer(app)
   const io = new Server(httpServer, {
     cors: {
-      // origin: [
-      //   'http://localhost:8080',
-      //   'http://192.168.88.47:8080',
-      //   'https://pet-quasar-app.herokuapp.com'
-      // ]
       origin: '*'
     }
     /* options */
@@ -30,7 +29,7 @@ async function run() {
 
   await mongoose
     .connect(
-      `mongodb+srv://${process.env.USER}:${process.env.PASS}@quasarapp.ebpoijk.mongodb.net/QuasarMobileApp?retryWrites=true&w=majority`
+      `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@quasarapp.ebpoijk.mongodb.net/QuasarMobileApp?retryWrites=true&w=majority`
     )
     .then(() => {
       console.log('Connection to the Atlas Cluster is successful!')
