@@ -6,12 +6,12 @@ const getCurrentUser = express.Router()
 
 getCurrentUser.get('/currentUser', verifyToken, async (req: any, res: any, _next: any) => {
   const auth = req.data.user
-  const UsersList: UserType[] = await Users.find({
+  const CurrentUser = await Users.findOne({
     _id: auth._id 
   })
-  console.log(UsersList);
+  console.log(CurrentUser);
   
-  res.json(UsersList)
+  res.json(CurrentUser)
 })
 
 export default getCurrentUser
