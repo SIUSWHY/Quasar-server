@@ -10,7 +10,7 @@ import { createServer } from 'http'
 import { Server } from 'socket.io'
 import LoginUser from './controllers/login'
 import getUsers from './controllers/getUsers'
-import Hello from './controllers/hello'
+import getCurrentUser from './controllers/getCurrentUser'
 
 async function run() {
   const app = express()
@@ -29,14 +29,18 @@ async function run() {
 
   await mongoose
     .connect(
-      `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@quasarapp.ebpoijk.mongodb.net/QuasarMobileApp?retryWrites=true&w=majority`
+      'mongodb+srv://quasarapp.ebpoijk.mongodb.net/QuasarMobileApp?retryWrites=true&w=majority',
+      {
+        user: process.env.DB_USER,
+        pass: process.env.DB_PASS
+      }
     )
     .then(() => {
       console.log('Connection to the Atlas Cluster is successful!')
     })
     .catch((err) => console.error(err))
 
-  app.use([LoginUser, getUsers, Hello])
+  app.use([LoginUser, getUsers, getCurrentUser])
 
   io.on('connection', (socket) => {
     console.log('a user connected')

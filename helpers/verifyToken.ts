@@ -1,8 +1,6 @@
 import jwt from 'jsonwebtoken'
 
 function verifyToken(req: any, _res: any, next: any) {
-  console.log(req.headers.authorization)
-
   let token = req.headers.authorization.split(' ').pop()
 
   // verify a token symmetric - synchronous
