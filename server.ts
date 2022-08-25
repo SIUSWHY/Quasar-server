@@ -43,22 +43,25 @@ async function run() {
   app.use([LoginUser, getUsers, getCurrentUser])
 
   io.on('connection', (socket) => {
-    console.log('a user connected')
+    socket.on('roomId', (data) => {
+      socket.join(data.room_id)
+      console.log(`${data.username} user connected`)
+    })
 
-    socket.on('disconnecting', () => {})
+    socket.on('disconnecting', () => {
+      console.log(socket.rooms)
+    })
 
     socket.on('disconnect', () => {
       console.log('a user disconnected')
     })
-
-    socket.join('room1')
 
     socket.on('message', (data) => {
       console.log(data)
 
       // save to DB
 
-      io.to('room1').emit('ok', { AAA: 'false', data })
+      io.to(data.room_id).emit('ok', { AAA: 'false', data })
     })
   })
 
