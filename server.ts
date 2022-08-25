@@ -44,16 +44,21 @@ async function run() {
 
   io.on('connection', (socket) => {
     console.log('a user connected')
+
+    socket.on('disconnecting', () => {})
+
     socket.on('disconnect', () => {
       console.log('a user disconnected')
     })
+
+    socket.join('room1')
 
     socket.on('message', (data) => {
       console.log(data)
 
       // save to DB
 
-      socket.emit('ok', { AAA: false })
+      io.to('room1').emit('ok', { AAA: 'false', data })
     })
   })
 
