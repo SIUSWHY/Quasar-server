@@ -13,7 +13,9 @@ import LoginUser from './controllers/login'
 import getUsers from './controllers/getUsers'
 import getCurrentUser from './controllers/getCurrentUser'
 import modelRoom from './models/modelRoom'
-import { MessageType, RoomType } from './types/roomType'
+import { RoomType } from './types/roomType'
+import modelMessage from './models/modelMessage'
+import { MessageType } from './types/messageType'
 
 async function run() {
   const app = express()
@@ -57,11 +59,10 @@ async function run() {
       roomData = {
         roomId: roomId,
         chatType: chatType,
-        users_id: [user.user._id, data.companionId],
-        messages: []
+        users_id: [user.user._id, data.companionId]
       }
 
-      const room: RoomType[] = await modelRoom.find({
+      let room = await modelRoom.findOne({
         $or: [
           {
             $and: [
@@ -78,14 +79,23 @@ async function run() {
         ]
       })
 
-      if (room.length !== 0) {
-        socket.join(room[0].roomId)
-        postMessageforUsers(room[0].roomId, room[0].messages)
-      } else {
-        await modelRoom.create(roomData)
-        socket.join(roomData.roomId)
-        postMessageforUsers(roomData.roomId, roomData.messages)
+      if (!room) {
+        room = await modelRoom.create(roomData)
       }
+
+      socket.join(room.roomId)
+      postMessageforUsers(room.roomId)
+
+      const messages = await modelMessage.find({
+        roomId: room.roomId
+      })
+
+      socket.emit('join', {
+        roomId: room.roomId,
+        messages: messages
+      })
+
+      // socket.on('message', onSocketMessage)
     })
 
     console.log(`
@@ -99,9 +109,10 @@ async function run() {
       console.log(`${user.user.name} - disconnected`)
     })
 
-    function postMessageforUsers(room_id: string, arrMessages: Array<object>) {
+    function postMessageforUsers(room_id: string) {
       socket.on('message', async (data) => {
         const message: MessageType = data.message
+        console.log(message)
 
         // save to DB
 
@@ -109,14 +120,23 @@ async function run() {
         // const dataForSocket = adaptMessage(message)
         // io.to(roomId).emit('ok', dataForSocket)
 
-        await modelRoom.updateOne(
-          { roomId: room_id },
-          { $push: { messages: message } }
-        )
+        await modelMessage.create({
+          roomId: room_id,
+          stamp: message.stamp,
+          messageText: message.messageText,
+          userId: message.userId
+        })
+        // ;(await modelRoom.findById(room_id))?.messages0
+
+        // await modelMessage.find({ roomId: room_id })
 
         io.to(room_id).emit('ok', { data })
       })
     }
+
+    // function getRoom(room) {
+    //   socket.emit('getRoom', room)
+    // }
   })
 
   httpServer.listen(port, () =>
