@@ -6,11 +6,14 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import mongoose from 'mongoose'
 import cors from 'cors'
+import jwt from 'jsonwebtoken'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import LoginUser from './controllers/login'
 import getUsers from './controllers/getUsers'
 import getCurrentUser from './controllers/getCurrentUser'
+import modelRoom from './models/modelRoom'
+import { MessageType, RoomType } from './types/roomType'
 
 async function run() {
   const app = express()
@@ -42,27 +45,78 @@ async function run() {
 
   app.use([LoginUser, getUsers, getCurrentUser])
 
-  io.on('connection', (socket) => {
-    socket.on('roomId', (data) => {
-      socket.join(data.room_id)
-      console.log(`${data.username} user connected`)
+  io.on('connection', async (socket) => {
+    let token: any = socket.handshake.query.token
+    let user: any = jwt.verify(token, 'JWT_KEY')
+    let chatType: any = socket.handshake.query.chatType
+    let roomId: string = `${Date.now()}`
+    let users_id: any = []
+    let roomData: RoomType
+
+    socket.on('companionId', async (data) => {
+      roomData = {
+        roomId: roomId,
+        chatType: chatType,
+        users_id: [user.user._id, data.companionId],
+        messages: []
+      }
+
+      const room: RoomType[] = await modelRoom.find({
+        $or: [
+          {
+            $and: [
+              { users_id: [user.user._id, data.companionId] },
+              { chatType: 'double' }
+            ]
+          },
+          {
+            $and: [
+              { users_id: [data.companionId, user.user._id] },
+              { chatType: 'double' }
+            ]
+          }
+        ]
+      })
+
+      if (room.length !== 0) {
+        socket.join(room[0].roomId)
+        postMessageforUsers(room[0].roomId, room[0].messages)
+      } else {
+        await modelRoom.create(roomData)
+        socket.join(roomData.roomId)
+        postMessageforUsers(roomData.roomId, roomData.messages)
+      }
     })
+
+    console.log(`
+    ${user.user.name} - connected`)
 
     socket.on('disconnecting', () => {
       console.log(socket.rooms)
     })
 
     socket.on('disconnect', () => {
-      console.log('a user disconnected')
+      console.log(`${user.user.name} - disconnected`)
     })
 
-    socket.on('message', (data) => {
-      console.log(data)
+    function postMessageforUsers(room_id: string, arrMessages: Array<object>) {
+      socket.on('message', async (data) => {
+        const message: MessageType = data.message
 
-      // save to DB
+        // save to DB
 
-      io.to(data.room_id).emit('ok', { AAA: 'false', data })
-    })
+        // const message = await Message.create()
+        // const dataForSocket = adaptMessage(message)
+        // io.to(roomId).emit('ok', dataForSocket)
+
+        await modelRoom.updateOne(
+          { roomId: room_id },
+          { $push: { messages: message } }
+        )
+
+        io.to(room_id).emit('ok', { data })
+      })
+    }
   })
 
   httpServer.listen(port, () =>
