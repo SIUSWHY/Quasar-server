@@ -16,6 +16,7 @@ import modelRoom from './models/modelRoom'
 import { RoomType } from './types/roomType'
 import modelMessage from './models/modelMessage'
 import { MessageType } from './types/messageType'
+import getCompanion from './controllers/getCompanion'
 
 async function run() {
   const app = express()
@@ -45,7 +46,7 @@ async function run() {
     })
     .catch((err) => console.error(err))
 
-  app.use([LoginUser, getUsers, getCurrentUser])
+  app.use([LoginUser, getUsers, getCurrentUser, getCompanion])
 
   io.on('connection', async (socket) => {
     let token: any = socket.handshake.query.token

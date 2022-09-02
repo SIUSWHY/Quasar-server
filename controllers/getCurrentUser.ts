@@ -4,13 +4,17 @@ import Users from '../models/modelUser'
 import { UserType } from '../types/userType'
 const getCurrentUser = express.Router()
 
-getCurrentUser.get('/currentUser', verifyToken, async (req: any, res: any, _next: any) => {
-  const auth = req.data.user
-  const CurrentUser = await Users.findOne({
-    _id: auth._id 
-  })
-  
-  res.json(CurrentUser)
-})
+getCurrentUser.get(
+  '/currentUser',
+  verifyToken,
+  async (req: any, res: any, _next: any) => {
+    const auth = req.data.user
+    const CurrentUser = await Users.findOne({
+      _id: auth._id
+    })
+
+    res.json(CurrentUser)
+  }
+)
 
 export default getCurrentUser
