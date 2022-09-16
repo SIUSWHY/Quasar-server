@@ -17,6 +17,7 @@ import { RoomType } from './types/roomType'
 import modelMessage from './models/modelMessage'
 import { MessageType } from './types/messageType'
 import getCompanion from './controllers/getCompanion'
+import getRooms from './controllers/getRooms'
 
 async function run() {
   const app = express()
@@ -46,7 +47,7 @@ async function run() {
     })
     .catch((err) => console.error(err))
 
-  app.use([LoginUser, getUsers, getCurrentUser, getCompanion])
+  app.use([LoginUser, getUsers, getCurrentUser, getCompanion, getRooms])
 
   io.on('connection', async (socket) => {
     let token: any = socket.handshake.query.token
@@ -64,19 +65,10 @@ async function run() {
       }
 
       let room = await modelRoom.findOne({
-        $or: [
-          {
-            $and: [
-              { users_id: [user.user._id, data.companionId] },
-              { chatType: 'double' }
-            ]
-          },
-          {
-            $and: [
-              { users_id: [data.companionId, user.user._id] },
-              { chatType: 'double' }
-            ]
-          }
+        $and: [
+          { users_id: user.user._id },
+          { users_id: data.companionId },
+          { chatType: 'double' }
         ]
       })
 
