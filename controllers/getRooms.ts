@@ -10,7 +10,7 @@ getRooms.post(
     const userId = req.body._id
     console.log(userId)
 
-    const Rooms = await Room.find({ users_id: userId })
+    const Rooms = await Room.find({ users_id: userId }).populate('users_id')
 
     res.json(Rooms)
   }

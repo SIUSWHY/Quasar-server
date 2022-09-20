@@ -3,4 +3,5 @@ export interface MessageType {
   stamp: string
   userId: string
   roomId: string
+  whoRead: []
 }

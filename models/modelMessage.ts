@@ -1,11 +1,12 @@
-import { model, Schema } from 'mongoose'
+import { model, ObjectId, Schema } from 'mongoose'
 import { MessageType } from '../types/messageType'
 
 const MessageSchema = new Schema<MessageType>({
   messageText: Array,
   stamp: String,
   userId: String,
-  roomId: String
+  roomId: String,
+  whoRead: Array<ObjectId>
 })
 
 export default model<MessageType>('Message', MessageSchema)

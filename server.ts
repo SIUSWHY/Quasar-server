@@ -117,7 +117,8 @@ async function run() {
           roomId: room_id,
           stamp: message.stamp,
           messageText: message.messageText,
-          userId: message.userId
+          userId: message.userId,
+          whoRead: user.user._id
         })
         // ;(await modelRoom.findById(room_id))?.messages0
 
