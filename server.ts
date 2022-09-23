@@ -84,7 +84,7 @@ async function run() {
       })
 
       socket.emit('join', {
-        roomId: room.roomId,
+        room: room,
         messages: messages
       })
 
@@ -118,7 +118,7 @@ async function run() {
           stamp: message.stamp,
           messageText: message.messageText,
           userId: message.userId,
-          whoRead: user.user._id
+          whoRead: message.whoRead
         })
         // ;(await modelRoom.findById(room_id))?.messages0
 

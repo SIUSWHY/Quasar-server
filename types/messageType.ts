@@ -1,6 +1,6 @@
 export interface MessageType {
   messageText: []
-  stamp: string
+  stamp: Date
   userId: string
   roomId: string
   whoRead: []

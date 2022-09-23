@@ -3,7 +3,7 @@ import { MessageType } from '../types/messageType'
 
 const MessageSchema = new Schema<MessageType>({
   messageText: Array,
-  stamp: String,
+  stamp: Date,
   userId: String,
   roomId: String,
   whoRead: Array<ObjectId>
