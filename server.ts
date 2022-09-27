@@ -11,6 +11,8 @@ import { createServer } from 'http'
 import { Server } from 'socket.io'
 import LoginUser from './controllers/login'
 import getUsers from './controllers/getUsers'
+import getUser from './controllers/getUser'
+import getUnreadMessagesCount from './controllers/getUnreadMessages'
 import getCurrentUser from './controllers/getCurrentUser'
 import modelRoom from './models/modelRoom'
 import { RoomType } from './types/roomType'
@@ -47,7 +49,15 @@ async function run() {
     })
     .catch((err) => console.error(err))
 
-  app.use([LoginUser, getUsers, getCurrentUser, getCompanion, getRooms])
+  app.use([
+    LoginUser,
+    getUsers,
+    getCurrentUser,
+    getCompanion,
+    getRooms,
+    getUser,
+    getUnreadMessagesCount
+  ])
 
   io.on('connection', async (socket) => {
     let token: any = socket.handshake.query.token
@@ -99,7 +109,8 @@ async function run() {
     })
 
     socket.on('disconnect', () => {
-      console.log(`${user.user.name} - disconnected`)
+      console.log(`
+      ${user.user.name} - disconnected`)
     })
 
     function postMessageforUsers(room_id: string) {
