@@ -20,6 +20,7 @@ import modelMessage from './models/modelMessage'
 import { MessageType } from './types/messageType'
 import getCompanion from './controllers/getCompanion'
 import getRooms from './controllers/getRooms'
+import { UserType } from './types/userType'
 
 async function run() {
   const app = express()
@@ -59,24 +60,30 @@ async function run() {
     getUnreadMessagesCount
   ])
 
+  const sockets = new Map<string, string>()
+
   io.on('connection', async (socket) => {
     let token: any = socket.handshake.query.token
-    let user: any = jwt.verify(token, 'JWT_KEY')
+    let { user } = jwt.verify(token, 'JWT_KEY') as { user: UserType }
     let chatType: any = socket.handshake.query.chatType
     let roomId: string = `${Date.now()}`
     let users_id: any = []
     let roomData: RoomType
+    sockets.set(user._id, socket.id)
+    console.log(user)
 
     socket.on('companionId', async (data) => {
       roomData = {
         roomId: roomId,
         chatType: chatType,
-        users_id: [user.user._id, data.companionId]
+        users_id: [user._id, data.companionId]
       }
+
+      console.log('roomData', roomData)
 
       let room = await modelRoom.findOne({
         $and: [
-          { users_id: user.user._id },
+          { users_id: user._id },
           { users_id: data.companionId },
           { chatType: 'double' }
         ]
@@ -87,7 +94,7 @@ async function run() {
       }
 
       socket.join(room.roomId)
-      postMessageforUsers(room.roomId)
+      postMessageforUsers(room)
 
       const messages = await modelMessage.find({
         roomId: room.roomId
@@ -102,7 +109,7 @@ async function run() {
     })
 
     console.log(`
-    ${user.user.name} - connected`)
+    ${user.name} - connected`)
 
     socket.on('disconnecting', () => {
       console.log(socket.rooms)
@@ -110,10 +117,10 @@ async function run() {
 
     socket.on('disconnect', () => {
       console.log(`
-      ${user.user.name} - disconnected`)
+      ${user.name} - disconnected`)
     })
 
-    function postMessageforUsers(room_id: string) {
+    function postMessageforUsers(room: RoomType) {
       socket.on('message', async (data) => {
         const message: MessageType = data.message
         console.log(message)
@@ -125,7 +132,7 @@ async function run() {
         // io.to(roomId).emit('ok', dataForSocket)
 
         await modelMessage.create({
-          roomId: room_id,
+          roomId: room.roomId,
           stamp: message.stamp,
           messageText: message.messageText,
           userId: message.userId,
@@ -135,7 +142,15 @@ async function run() {
 
         // await modelMessage.find({ roomId: room_id })
 
-        io.to(room_id).emit('ok', { data })
+        io.to(room.roomId).emit('ok', { data })
+
+        room.users_id.forEach((userId) => {
+          const userIdString = userId.toString()
+          const socket_id = sockets.get(userIdString)
+          console.log(socket_id, userIdString, sockets)
+
+          io.to(socket_id).emit('newMessNotify', room.roomId)
+        })
       })
     }
 
