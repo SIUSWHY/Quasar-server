@@ -21,6 +21,8 @@ import { MessageType } from './types/messageType'
 import getCompanion from './controllers/getCompanion'
 import getRooms from './controllers/getRooms'
 import { UserType } from './types/userType'
+import modelUser from './models/modelUser'
+import cryptPassword from './helpers/hashPassword'
 
 async function run() {
   const app = express()
@@ -57,8 +59,24 @@ async function run() {
     getCompanion,
     getRooms,
     getUser,
-    getUnreadMessagesCount
+    getUnreadMessagesCount,
+    cryptPaasswords
   ])
+
+  async function cryptPaasswords() {
+    const users: UserType[] = await modelUser.find()
+    const newUsers = await Promise.all(
+      users.map(async (user) => {
+        const newUserPassword = await cryptPassword(user.password)
+        user.password = newUserPassword
+        return user
+      })
+    )
+    const json = JSON.stringify(newUsers)
+    console.log(json)
+  }
+
+  // cryptPaasswords()
 
   const sockets = new Map<string, string>()
 
