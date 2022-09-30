@@ -1,1 +1,1 @@
-{"version":3,"file":"createToken.js","sourceRoot":"","sources":["../../helpers/createToken.ts"],"names":[],"mappings":";;;;;AAAA,gEAA8B;AAE9B,SAAS,WAAW,CAAC,IAAS;IAC5B,MAAM,KAAK,GAAW,sBAAG,CAAC,IAAI,CAAC,IAAI,EAAE,SAAS,CAAC,CAAA;IAC/C,OAAO,KAAK,CAAA;AACd,CAAC;AAED,kBAAe,WAAW,CAAA"}
+{"version":3,"file":"createToken.js","sourceRoot":"","sources":["../../src/helpers/createToken.ts"],"names":[],"mappings":";;;;;AAAA,gEAA8B;AAE9B,SAAS,WAAW,CAAC,IAAS;IAC5B,MAAM,KAAK,GAAW,sBAAG,CAAC,IAAI,CAAC,IAAI,EAAE,SAAS,CAAC,CAAA;IAC/C,OAAO,KAAK,CAAA;AACd,CAAC;AAED,kBAAe,WAAW,CAAA"}

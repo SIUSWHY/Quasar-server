@@ -149,6 +149,10 @@ async function run() {
           const socket_id = sockets.get(userIdString)
           console.log(socket_id, userIdString, sockets)
 
+          if (userId === user._id) {
+            return
+          }
+
           io.to(socket_id).emit('newMessNotify', room.roomId)
         })
       })

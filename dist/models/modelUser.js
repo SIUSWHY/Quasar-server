@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const UserSchema = new mongoose_1.Schema({
+    _id: mongoose_1.Schema.Types.ObjectId,
     name: String,
     password: String
 });

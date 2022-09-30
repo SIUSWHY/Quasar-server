@@ -23,10 +23,13 @@ const http_1 = require("http");
 const socket_io_1 = require("socket.io");
 const login_1 = __importDefault(require("./controllers/login"));
 const getUsers_1 = __importDefault(require("./controllers/getUsers"));
+const getUser_1 = __importDefault(require("./controllers/getUser"));
+const getUnreadMessages_1 = __importDefault(require("./controllers/getUnreadMessages"));
 const getCurrentUser_1 = __importDefault(require("./controllers/getCurrentUser"));
 const modelRoom_1 = __importDefault(require("./models/modelRoom"));
 const modelMessage_1 = __importDefault(require("./models/modelMessage"));
 const getCompanion_1 = __importDefault(require("./controllers/getCompanion"));
+const getRooms_1 = __importDefault(require("./controllers/getRooms"));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         const app = (0, express_1.default)();
@@ -50,59 +53,63 @@ function run() {
             console.log('Connection to the Atlas Cluster is successful!');
         })
             .catch((err) => console.error(err));
-        app.use([login_1.default, getUsers_1.default, getCurrentUser_1.default, getCompanion_1.default]);
+        app.use([
+            login_1.default,
+            getUsers_1.default,
+            getCurrentUser_1.default,
+            getCompanion_1.default,
+            getRooms_1.default,
+            getUser_1.default,
+            getUnreadMessages_1.default
+        ]);
+        const sockets = new Map();
         io.on('connection', (socket) => __awaiter(this, void 0, void 0, function* () {
             let token = socket.handshake.query.token;
-            let user = jsonwebtoken_1.default.verify(token, 'JWT_KEY');
+            let { user } = jsonwebtoken_1.default.verify(token, 'JWT_KEY');
             let chatType = socket.handshake.query.chatType;
             let roomId = `${Date.now()}`;
             let users_id = [];
             let roomData;
+            sockets.set(user._id, socket.id);
+            console.log(user);
             socket.on('companionId', (data) => __awaiter(this, void 0, void 0, function* () {
                 roomData = {
                     roomId: roomId,
                     chatType: chatType,
-                    users_id: [user.user._id, data.companionId]
+                    users_id: [user._id, data.companionId]
                 };
+                console.log('roomData', roomData);
                 let room = yield modelRoom_1.default.findOne({
-                    $or: [
-                        {
-                            $and: [
-                                { users_id: [user.user._id, data.companionId] },
-                                { chatType: 'double' }
-                            ]
-                        },
-                        {
-                            $and: [
-                                { users_id: [data.companionId, user.user._id] },
-                                { chatType: 'double' }
-                            ]
-                        }
+                    $and: [
+                        { users_id: user._id },
+                        { users_id: data.companionId },
+                        { chatType: 'double' }
                     ]
                 });
                 if (!room) {
                     room = yield modelRoom_1.default.create(roomData);
                 }
                 socket.join(room.roomId);
-                postMessageforUsers(room.roomId);
+                postMessageforUsers(room);
                 const messages = yield modelMessage_1.default.find({
                     roomId: room.roomId
                 });
                 socket.emit('join', {
-                    roomId: room.roomId,
+                    room: room,
                     messages: messages
                 });
                 // socket.on('message', onSocketMessage)
             }));
             console.log(`
-    ${user.user.name} - connected`);
+    ${user.name} - connected`);
             socket.on('disconnecting', () => {
                 console.log(socket.rooms);
             });
             socket.on('disconnect', () => {
-                console.log(`${user.user.name} - disconnected`);
+                console.log(`
+      ${user.name} - disconnected`);
             });
-            function postMessageforUsers(room_id) {
+            function postMessageforUsers(room) {
                 socket.on('message', (data) => __awaiter(this, void 0, void 0, function* () {
                     const message = data.message;
                     console.log(message);
@@ -111,14 +118,24 @@ function run() {
                     // const dataForSocket = adaptMessage(message)
                     // io.to(roomId).emit('ok', dataForSocket)
                     yield modelMessage_1.default.create({
-                        roomId: room_id,
+                        roomId: room.roomId,
                         stamp: message.stamp,
                         messageText: message.messageText,
-                        userId: message.userId
+                        userId: message.userId,
+                        whoRead: message.whoRead
                     });
                     // ;(await modelRoom.findById(room_id))?.messages0
                     // await modelMessage.find({ roomId: room_id })
-                    io.to(room_id).emit('ok', { data });
+                    io.to(room.roomId).emit('ok', { data });
+                    room.users_id.forEach((userId) => {
+                        const userIdString = userId.toString();
+                        const socket_id = sockets.get(userIdString);
+                        console.log(socket_id, userIdString, sockets);
+                        if (userId === user._id) {
+                            return;
+                        }
+                        io.to(socket_id).emit('newMessNotify', room.roomId);
+                    });
                 }));
             }
             // function getRoom(room) {

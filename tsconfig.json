@@ -12,5 +12,5 @@
       "*": ["node_modules/*"]
     }
   },
-  "include": ["*"]
+  "include": ["*", "src/server.ts", "src/types", "src/controllers"]
 }

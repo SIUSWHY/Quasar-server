@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npm install --also=dev && tsc",
     "start": "node dist/server.js",
-    "dev": "npx ts-node-dev server.ts",
+    "dev": "npx ts-node-dev src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Daniil Ventsov <daniil.ventsov@progforce.com>",
