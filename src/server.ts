@@ -84,31 +84,40 @@ async function run() {
     let token: any = socket.handshake.query.token
     let { user } = jwt.verify(token, 'JWT_KEY') as { user: UserType }
     let chatType: any = socket.handshake.query.chatType
-    let roomId: string = `${Date.now()}`
+    let roomId: string
     let users_id: any = []
     let roomData: RoomType
     sockets.set(user._id, socket.id)
-    console.log(user)
+
+    socket.on('getRoomId', (data) => {
+      roomId = data.roomId
+    })
 
     socket.on('companionId', async (data) => {
-      roomData = {
-        roomId: roomId,
-        chatType: chatType,
-        users_id: [user._id, data.companionId]
-      }
+      let room: RoomType
 
-      console.log('roomData', roomData)
+      if (roomId === undefined || null) {
+        roomData = {
+          roomId: `${Date.now()}`,
+          chatType: chatType,
+          users_id: [user._id, data.companionId]
+        }
 
-      let room = await modelRoom.findOne({
-        $and: [
-          { users_id: user._id },
-          { users_id: data.companionId },
-          { chatType: 'double' }
-        ]
-      })
+        console.log('roomData', roomData)
 
-      if (!room) {
-        room = await modelRoom.create(roomData)
+        room = await modelRoom.findOne({
+          $and: [
+            { users_id: user._id },
+            { users_id: data.companionId },
+            { chatType: 'double' }
+          ]
+        })
+
+        if (!room) {
+          room = await modelRoom.create(roomData)
+        }
+      } else {
+        room = await modelRoom.findOne({ roomId: roomId })
       }
 
       socket.join(room.roomId)
