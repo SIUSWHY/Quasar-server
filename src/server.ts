@@ -4,7 +4,7 @@ dotenv.config()
 
 import express from 'express'
 import bodyParser from 'body-parser'
-import mongoose from 'mongoose'
+import mongoose, { ObjectId } from 'mongoose'
 import cors from 'cors'
 import jwt from 'jsonwebtoken'
 import { createServer } from 'http'
@@ -22,7 +22,6 @@ import getCompanion from './controllers/getCompanion'
 import getRooms from './controllers/getRooms'
 import { UserType } from './types/userType'
 import modelUser from './models/modelUser'
-import cryptPassword from './helpers/hashPassword'
 
 async function run() {
   const app = express()
@@ -59,24 +58,8 @@ async function run() {
     getCompanion,
     getRooms,
     getUser,
-    getUnreadMessagesCount,
-    cryptPaasswords
+    getUnreadMessagesCount
   ])
-
-  async function cryptPaasswords() {
-    const users: UserType[] = await modelUser.find()
-    const newUsers = await Promise.all(
-      users.map(async (user) => {
-        const newUserPassword = await cryptPassword(user.password)
-        user.password = newUserPassword
-        return user
-      })
-    )
-    const json = JSON.stringify(newUsers)
-    console.log(json)
-  }
-
-  // cryptPaasswords()
 
   const sockets = new Map<string, string>()
 
@@ -145,6 +128,28 @@ async function run() {
     socket.on('disconnect', () => {
       console.log(`
       ${user.name} - disconnected`)
+    })
+
+    socket.on('getdataForGroup', async (data) => {
+      const {
+        groupName,
+        groupImage,
+        groupMembers,
+        groupType
+      }: {
+        groupName: string
+        groupImage: string
+        groupMembers: ObjectId[]
+        groupType: string
+      } = data
+      const group = await modelRoom.create({
+        roomId: `${Date.now()}`,
+        chatType: groupType,
+        users_id: groupMembers,
+        room_img: groupImage,
+        room_name: groupName
+      })
+      console.log(group)
     })
 
     function postMessageforUsers(room: RoomType) {
