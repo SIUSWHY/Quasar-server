@@ -74,6 +74,7 @@ async function run() {
 
     socket.on('getRoomId', (data) => {
       roomId = data.roomId
+      console.log('@getRoomId')
     })
 
     socket.on('companionId', async (data) => {
@@ -85,8 +86,6 @@ async function run() {
           chatType: chatType,
           users_id: [user._id, data.companionId]
         }
-
-        console.log('roomData', roomData)
 
         room = await modelRoom.findOne({
           $and: [
@@ -114,8 +113,6 @@ async function run() {
         room: room,
         messages: messages
       })
-
-      // socket.on('message', onSocketMessage)
     })
 
     console.log(`
@@ -149,19 +146,11 @@ async function run() {
         room_img: groupImage,
         room_name: groupName
       })
-      console.log(group)
     })
 
     function postMessageforUsers(room: RoomType) {
       socket.on('message', async (data) => {
         const message: MessageType = data.message
-        console.log(message)
-
-        // save to DB
-
-        // const message = await Message.create()
-        // const dataForSocket = adaptMessage(message)
-        // io.to(roomId).emit('ok', dataForSocket)
 
         await modelMessage.create({
           roomId: room.roomId,
@@ -170,16 +159,12 @@ async function run() {
           userId: message.userId,
           whoRead: message.whoRead
         })
-        // ;(await modelRoom.findById(room_id))?.messages0
-
-        // await modelMessage.find({ roomId: room_id })
 
         io.to(room.roomId).emit('ok', { data })
 
         room.users_id.forEach((userId) => {
           const userIdString = userId.toString()
           const socket_id = sockets.get(userIdString)
-          console.log(socket_id, userIdString, sockets)
 
           if (userId === user._id) {
             return
@@ -190,9 +175,13 @@ async function run() {
       })
     }
 
-    // function getRoom(room) {
-    //   socket.emit('getRoom', room)
-    // }
+    socket.on('disconnectRoom', () => {
+      socket.rooms.forEach((room) => {
+        socket.leave(room)
+        console.log('leave room: ', room)
+      })
+      console.log(socket.rooms)
+    })
   })
 
   httpServer.listen(port, () =>
