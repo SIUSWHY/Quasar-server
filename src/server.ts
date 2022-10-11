@@ -22,6 +22,7 @@ import getCompanion from './controllers/getCompanion'
 import getRooms from './controllers/getRooms'
 import { UserType } from './types/userType'
 import modelUser from './models/modelUser'
+import socketLogic from './helpers/socket/index'
 
 async function run() {
   const app = express()
@@ -61,128 +62,7 @@ async function run() {
     getUnreadMessagesCount
   ])
 
-  const sockets = new Map<string, string>()
-
-  io.on('connection', async (socket) => {
-    let token: any = socket.handshake.query.token
-    let { user } = jwt.verify(token, 'JWT_KEY') as { user: UserType }
-    let chatType: any = socket.handshake.query.chatType
-    let roomId: string
-    let users_id: any = []
-    let roomData: RoomType
-    sockets.set(user._id, socket.id)
-
-    socket.on('getRoomId', (data) => {
-      roomId = data.roomId
-      console.log('@getRoomId')
-    })
-
-    socket.on('companionId', async (data) => {
-      let room: RoomType
-
-      if (roomId === undefined || null) {
-        roomData = {
-          roomId: `${Date.now()}`,
-          chatType: chatType,
-          users_id: [user._id, data.companionId]
-        }
-
-        room = await modelRoom.findOne({
-          $and: [
-            { users_id: user._id },
-            { users_id: data.companionId },
-            { chatType: 'double' }
-          ]
-        })
-
-        if (!room) {
-          room = await modelRoom.create(roomData)
-        }
-      } else {
-        room = await modelRoom.findOne({ roomId: roomId })
-      }
-
-      socket.join(room.roomId)
-      postMessageforUsers(room)
-
-      const messages = await modelMessage.find({
-        roomId: room.roomId
-      })
-
-      socket.emit('join', {
-        room: room,
-        messages: messages
-      })
-    })
-
-    console.log(`
-    ${user.name} - connected`)
-
-    socket.on('disconnecting', () => {
-      console.log(socket.rooms)
-    })
-
-    socket.on('disconnect', () => {
-      console.log(`
-      ${user.name} - disconnected`)
-    })
-
-    socket.on('getdataForGroup', async (data) => {
-      const {
-        groupName,
-        groupImage,
-        groupMembers,
-        groupType
-      }: {
-        groupName: string
-        groupImage: string
-        groupMembers: ObjectId[]
-        groupType: string
-      } = data
-      const group = await modelRoom.create({
-        roomId: `${Date.now()}`,
-        chatType: groupType,
-        users_id: groupMembers,
-        room_img: groupImage,
-        room_name: groupName
-      })
-    })
-
-    function postMessageforUsers(room: RoomType) {
-      socket.on('message', async (data) => {
-        const message: MessageType = data.message
-
-        await modelMessage.create({
-          roomId: room.roomId,
-          stamp: message.stamp,
-          messageText: message.messageText,
-          userId: message.userId,
-          whoRead: message.whoRead
-        })
-
-        io.to(room.roomId).emit('ok', { data })
-
-        room.users_id.forEach((userId) => {
-          const userIdString = userId.toString()
-          const socket_id = sockets.get(userIdString)
-
-          if (userId === user._id) {
-            return
-          }
-
-          io.to(socket_id).emit('newMessNotify', room.roomId)
-        })
-      })
-    }
-
-    socket.on('disconnectRoom', () => {
-      socket.rooms.forEach((room) => {
-        socket.leave(room)
-        console.log('leave room: ', room)
-      })
-      console.log(socket.rooms)
-    })
-  })
+  socketLogic(io)
 
   httpServer.listen(port, () =>
     console.log(`
