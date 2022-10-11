@@ -1,12 +1,12 @@
 import jwt from 'jsonwebtoken'
-import { ObjectId } from 'mongoose'
 import { Server } from 'socket.io'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 import modelMessage from '../../models/modelMessage'
-import { MessageType } from '../../types/messageType'
+import saveMessageToDb from './helpers/saveMessage'
 import modelRoom from '../../models/modelRoom'
 import { RoomType } from '../../types/roomType'
 import { UserType } from '../../types/userType'
+import createGroupRoom from './helpers/createGroupRoom'
 
 function socketLogic(
   io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
@@ -17,18 +17,20 @@ function socketLogic(
     let token: any = socket.handshake.query.token
     let chatType: any = socket.handshake.query.chatType
     let { user } = jwt.verify(token, 'JWT_KEY') as { user: UserType }
-    let roomId: string
-    let users_id: any = []
-    let room: RoomType
+    let room: RoomType = { roomId: '', chatType: '', users_id: [] }
 
     clients.set(user._id, socket.id)
 
     socket.on('get_room_id', (data) => {
-      roomId = data.roomId
+      if (!Boolean(data.roomId)) {
+        return
+      }
+
+      room.roomId = data.roomId
     })
 
     socket.on('get_companion_id', async (data) => {
-      if (!Boolean(roomId)) {
+      if (!Boolean(room.roomId)) {
         const roomData: RoomType = {
           roomId: `${Date.now()}`,
           chatType: chatType,
@@ -47,7 +49,7 @@ function socketLogic(
           room = await modelRoom.create(roomData)
         }
       } else {
-        room = await modelRoom.findOne({ roomId: roomId })
+        room = await modelRoom.findOne({ roomId: room.roomId })
       }
 
       socket.join(room.roomId)
@@ -67,15 +69,7 @@ function socketLogic(
         throw new Error('NO ROOM')
       }
 
-      const message: MessageType = data.message
-
-      await modelMessage.create({
-        roomId: room.roomId,
-        stamp: message.stamp,
-        messageText: message.messageText,
-        userId: message.userId,
-        whoRead: message.whoRead
-      })
+      saveMessageToDb(data, room)
 
       io.to(room.roomId).emit('sent_message_to_room', { data })
 
@@ -104,24 +98,7 @@ function socketLogic(
     })
 
     socket.on('get_data_for_group', async (data) => {
-      const {
-        groupName,
-        groupImage,
-        groupMembers,
-        groupType
-      }: {
-        groupName: string
-        groupImage: string
-        groupMembers: ObjectId[]
-        groupType: string
-      } = data
-      const group = await modelRoom.create({
-        roomId: `${Date.now()}`,
-        chatType: groupType,
-        users_id: groupMembers,
-        room_img: groupImage,
-        room_name: groupName
-      })
+      createGroupRoom(data)
     })
 
     socket.on('disconnect_from_rooms', () => {
