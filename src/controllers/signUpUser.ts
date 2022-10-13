@@ -3,21 +3,32 @@ import express from 'express'
 import { UserType } from '../types/userType'
 import cryptPassword from '../helpers/hashPassword'
 import modelUser from '../models/modelUser'
+import multer from 'multer'
+import fs from 'fs'
 
 const SignUpUser = express.Router()
 
-SignUpUser.post('/signUpUser', async (req, res) => {
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'src/assets/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + '.png')
+  }
+})
+
+const upload = multer({ storage: storage })
+
+SignUpUser.post('/signUpUser', upload.single('avatar'), async (req, res) => {
   const {
     phone,
     password,
     email,
-    avatar,
     name
   }: {
     email: string
     phone: string
     name: string
-    avatar: string
     password: string
   } = req.body
 
@@ -32,6 +43,12 @@ SignUpUser.post('/signUpUser', async (req, res) => {
   } else {
     try {
       const cryptPass = await cryptPassword(password)
+      const img = fs.readFileSync(req.file!.path)
+      const encode_img = img.toString('base64')
+      const avatar = {
+        contentType: req.file!.mimetype,
+        image: new Buffer(encode_img, 'base64')
+      }
       const User = await modelUser.create({
         avatar,
         email,

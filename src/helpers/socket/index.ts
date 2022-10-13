@@ -16,7 +16,7 @@ function socketLogic(
   io.on('connection', async (socket) => {
     let token: any = socket.handshake.query.token
     let chatType: any = socket.handshake.query.chatType
-    let { user } = jwt.verify(token, 'JWT_KEY') as { user: UserType }
+    let { user } = jwt.verify(token, process.env.JWT_KEY) as { user: UserType }
     let room: RoomType = { roomId: '', chatType: '', users_id: [] }
 
     clients.set(user._id, socket.id)
