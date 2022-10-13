@@ -6,7 +6,6 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import mongoose, { ObjectId } from 'mongoose'
 import cors from 'cors'
-import jwt from 'jsonwebtoken'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import LoginUser from './controllers/login'
@@ -14,15 +13,10 @@ import getUsers from './controllers/getUsers'
 import getUser from './controllers/getUser'
 import getUnreadMessagesCount from './controllers/getUnreadMessages'
 import getCurrentUser from './controllers/getCurrentUser'
-import modelRoom from './models/modelRoom'
-import { RoomType } from './types/roomType'
-import modelMessage from './models/modelMessage'
-import { MessageType } from './types/messageType'
 import getCompanion from './controllers/getCompanion'
 import getRooms from './controllers/getRooms'
-import { UserType } from './types/userType'
-import modelUser from './models/modelUser'
 import socketLogic from './helpers/socket/index'
+import SignUpUser from './controllers/signUpUser'
 
 async function run() {
   const app = express()
@@ -59,7 +53,8 @@ async function run() {
     getCompanion,
     getRooms,
     getUser,
-    getUnreadMessagesCount
+    getUnreadMessagesCount,
+    SignUpUser
   ])
 
   socketLogic(io)

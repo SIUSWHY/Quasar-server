@@ -8,20 +8,26 @@ const LoginUser = express.Router()
 LoginUser.post('/loginUser', async (req, res) => {
   try {
     const { name, password }: { name: string; password: string } = req.body
+    console.log(req.body)
+
     const user: UserType = await User.findOne({
-      $and: [{ name }, { password }]
+      $and: [{ phone: name }, { password }]
     })
+    if (!Boolean(user)) {
+      res.status(400).send({ message: `We can't find user`, type: 'negative' })
+    }
+    console.log(user)
 
-    // const isPasswordValid: Promise<boolean> = bcrypt.compare(
-    //   password,
-    //   user.password
-    // )
+    const isPasswordValid: boolean = await bcrypt.compare(
+      password,
+      user.password
+    )
+    if (!isPasswordValid) {
+      return res
+        .status(400)
+        .send({ message: 'Invalid password', type: 'negative' })
+    }
 
-    // if (!isPasswordValid) {
-    //   return res
-    //     .status(400)
-    //     .send({ message: 'Invalid password', type: 'negative' })
-    // }
     if (user !== null) {
       const token = createToken({
         user
