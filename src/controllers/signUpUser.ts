@@ -13,7 +13,8 @@ const storage = multer.diskStorage({
     cb(null, 'src/assets/')
   },
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now() + '.png')
+    const mime = file.mimetype.split('/').pop()
+    cb(null, file.fieldname + '-' + Date.now() + '.' + mime)
   }
 })
 
@@ -39,7 +40,7 @@ SignUpUser.post('/signUpUser', upload.single('avatar'), async (req, res) => {
   if (Boolean(user)) {
     res
       .status(409)
-      .send({ message: 'This user already exists', type: 'warning' })
+      .send({ message: 'This phone or email already exists', type: 'warning' })
   } else {
     try {
       const cryptPass = await cryptPassword(password)
