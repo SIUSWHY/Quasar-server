@@ -7,6 +7,7 @@ import modelRoom from '../../models/modelRoom'
 import { RoomType } from '../../types/roomType'
 import { UserType } from '../../types/userType'
 import createGroupRoom from './helpers/createGroupRoom'
+import sendUserStatus from './helpers/sendUserStatus'
 
 function socketLogic(
   io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
@@ -88,8 +89,11 @@ function socketLogic(
     console.log(`
     ${user.name} - connected`)
 
+    sendUserStatus(true, socket, user, clients, io)
+
     socket.on('disconnecting', () => {
-      console.log(socket.rooms)
+      sendUserStatus(false, socket, user, clients, io)
+      // console.log(socket.rooms)
     })
 
     socket.on('disconnect', () => {
@@ -102,10 +106,10 @@ function socketLogic(
     })
 
     socket.on('disconnect_from_rooms', () => {
-      socket.rooms.forEach((room) => {
-        socket.leave(room)
-        console.log('leave room: ', room)
-      })
+      // socket.rooms.forEach((room) => {
+      //   socket.leave(room)
+      //   console.log('leave room: ', room)
+      // })
     })
   })
 }
