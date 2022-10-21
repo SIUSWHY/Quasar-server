@@ -17,6 +17,7 @@ import getCompanion from './controllers/getCompanion'
 import getRooms from './controllers/getRooms'
 import socketLogic from './helpers/socket/index'
 import SignUpUser from './controllers/signUpUser'
+import { instrument } from '@socket.io/admin-ui'
 
 async function run() {
   const app = express()
@@ -56,6 +57,10 @@ async function run() {
     getUnreadMessagesCount,
     SignUpUser
   ])
+
+  instrument(io, {
+    auth: false
+  })
 
   socketLogic(io)
 
