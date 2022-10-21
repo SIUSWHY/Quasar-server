@@ -8,7 +8,7 @@ getCurrentUser.get(
   '/currentUser',
   verifyToken,
   async (req: any, res: any, _next: any) => {
-    const auth = req.data.user
+    const auth = req.data
     const CurrentUser = await Users.findOne({
       _id: auth._id
     })

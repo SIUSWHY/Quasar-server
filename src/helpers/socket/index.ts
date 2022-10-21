@@ -17,7 +17,7 @@ function socketLogic(
   io.on('connection', async (socket) => {
     let token: any = socket.handshake.query.token
     let chatType: any = socket.handshake.query.chatType
-    let { user } = jwt.verify(token, process.env.JWT_KEY) as { user: UserType }
+    let user = jwt.verify(token, process.env.JWT_KEY) as UserType
     let room: RoomType = { roomId: '', chatType: '', users_id: [] }
 
     clients.set(user._id, socket.id)
@@ -89,13 +89,13 @@ function socketLogic(
     console.log(`
     ${user.name} - connected`)
 
-    socket.on('get_all_user_status', () => {
-      const arrUsersStatus: { userId: string; isOnline: boolean }[] = []
-      for (const userId of clients.keys()) {
-        arrUsersStatus.push({ userId: userId, isOnline: true })
-      }
-      socket.emit('send_all_users_status', arrUsersStatus)
-    })
+    // socket.on('get_all_user_status', () => {
+    //   const arrUsersStatus: { userId: string; isOnline: boolean }[] = []
+    //   for (const userId of clients.keys()) {
+    //     arrUsersStatus.push({ userId: userId, isOnline: true })
+    //   }
+    //   socket.emit('send_all_users_status', arrUsersStatus)
+    // })
 
     sendUserStatus(true, user, clients, io)
 

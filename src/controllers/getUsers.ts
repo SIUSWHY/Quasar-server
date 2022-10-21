@@ -5,7 +5,7 @@ import { UserType } from '../types/userType'
 const getUsers = express.Router()
 
 getUsers.get('/users', verifyToken, async (req: any, res: any, _next: any) => {
-  const auth = req.data.user
+  const auth = req.data
   const UsersList: UserType[] = await Users.find({
     _id: { $ne: auth._id }
   })
