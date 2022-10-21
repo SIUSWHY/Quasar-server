@@ -29,7 +29,10 @@ LoginUser.post('/loginUser', async (req, res) => {
     if (user !== null) {
       const { name, email, phone, _id } = user
       const token = createToken({
-        user: { name, email, phone, _id }
+        name,
+        email,
+        phone,
+        _id
       })
       return res
         .status(200)
