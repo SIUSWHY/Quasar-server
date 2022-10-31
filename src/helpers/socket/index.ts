@@ -24,6 +24,9 @@ function socketLogic(
       socket.emit('send_room_data_to_clent', {
         socketId: socket.id
       })
+      socket.on('send_data_for_auth_user_by_qr', (data) => {
+        console.log(data)
+      })
     } else {
       token = socket.handshake.query.token
       chatType = socket.handshake.query.chatType
