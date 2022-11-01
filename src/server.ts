@@ -24,7 +24,10 @@ import https from 'https'
 async function run() {
   const privateKey = fs.readFileSync('./certificates/server.key', 'utf8')
   const certificate = fs.readFileSync('./certificates/server.crt', 'utf8')
-  const credentials = { key: privateKey, cert: certificate }
+  const credentials = {
+    key: privateKey,
+    cert: certificate
+  }
 
   const app = express()
   const httpServer = https.createServer(credentials, app)
