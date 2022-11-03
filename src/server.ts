@@ -18,10 +18,23 @@ import getRooms from './controllers/getRooms'
 import socketLogic from './helpers/socket/index'
 import SignUpUser from './controllers/signUpUser'
 import { instrument } from '@socket.io/admin-ui'
+import fs from 'fs'
+import https from 'https'
 
 async function run() {
+  const privateKey = fs.readFileSync('./certificates/server.key', 'utf8')
+  const certificate = fs.readFileSync('./certificates/server.crt', 'utf8')
+  const credentials = {
+    key: privateKey,
+    cert: certificate
+  }
+
   const app = express()
-  const httpServer = createServer(app)
+  const httpServer =
+    process.env.NODE_ENV === 'development'
+      ? https.createServer(credentials, app)
+      : https.createServer(app)
+
   const io = new Server(httpServer, {
     cors: {
       origin: '*'
