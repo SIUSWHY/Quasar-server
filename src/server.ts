@@ -22,11 +22,14 @@ import fs from 'fs'
 import https from 'https'
 
 async function run() {
-  const privateKey = fs.readFileSync('./certificates/server.key', 'utf8')
-  const certificate = fs.readFileSync('./certificates/server.crt', 'utf8')
-  const credentials = {
-    key: privateKey,
-    cert: certificate
+  let credentials: { key: string; cert: string }
+  if (process.env.NODE_ENV === 'development') {
+    const privateKey = fs.readFileSync('./certificates/server.key', 'utf8')
+    const certificate = fs.readFileSync('./certificates/server.crt', 'utf8')
+    credentials = {
+      key: privateKey,
+      cert: certificate
+    }
   }
 
   const app = express()
