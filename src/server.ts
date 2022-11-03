@@ -30,7 +30,11 @@ async function run() {
   }
 
   const app = express()
-  const httpServer = https.createServer(credentials, app)
+  const httpServer =
+    process.env.NODE_ENV === 'development'
+      ? https.createServer(credentials, app)
+      : https.createServer(app)
+
   const io = new Server(httpServer, {
     cors: {
       origin: '*'
