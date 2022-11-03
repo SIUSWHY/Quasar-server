@@ -36,7 +36,7 @@ async function run() {
   const httpServer =
     process.env.NODE_ENV === 'development'
       ? https.createServer(credentials, app)
-      : https.createServer(app)
+      : createServer(app)
 
   const io = new Server(httpServer, {
     cors: {
