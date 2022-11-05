@@ -40,7 +40,8 @@ async function run() {
 
   const io = new Server(httpServer, {
     cors: {
-      origin: '*'
+      origin: '*',
+      credentials:true
     }
     /* options */
   })
