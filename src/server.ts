@@ -40,8 +40,11 @@ async function run() {
 
   const io = new Server(httpServer, {
     cors: {
-      origin: '*',
-      credentials:true
+      origin: [
+        'https://192.168.88.47:8080/',
+        'https://quasar-client.onrender.com',
+        '*'
+      ]
     }
     /* options */
   })
