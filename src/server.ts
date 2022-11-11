@@ -4,7 +4,7 @@ dotenv.config()
 
 import express from 'express'
 import bodyParser from 'body-parser'
-import mongoose, { ObjectId } from 'mongoose'
+import mongoose from 'mongoose'
 import cors from 'cors'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
@@ -41,10 +41,11 @@ async function run() {
   const io = new Server(httpServer, {
     cors: {
       origin: [
-        'https://192.168.88.47:8080/',
+        'https://192.168.88.47:8080',
         'https://quasar-client.onrender.com',
         '*'
-      ]
+      ],
+      methods: ['GET', 'POST']
     }
     /* options */
   })
