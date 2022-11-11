@@ -51,13 +51,14 @@ function socketLogic(
         socket.leave(data.roomId)
       })
     } else {
-      chatType = socket.handshake.query.chatType
       user = jwt.verify(token, process.env.JWT_KEY) as UserType
       room = { roomId: '', chatType: '', users_id: [] }
 
       clients.set(user._id, socket.id)
 
       socket.on('get_room_id', (data) => {
+        console.log(data)
+
         if (!Boolean(data.roomId)) {
           return
         }
@@ -69,7 +70,7 @@ function socketLogic(
         if (!Boolean(room.roomId)) {
           const roomData: RoomType = {
             roomId: `${Date.now()}`,
-            chatType: chatType,
+            chatType: 'double',
             users_id: [user._id, data.companionId]
           }
 

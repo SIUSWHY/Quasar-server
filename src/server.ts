@@ -44,7 +44,8 @@ async function run() {
         'https://192.168.88.47:8080',
         'https://quasar-client.onrender.com',
         '*'
-      ]
+      ],
+      methods: ['GET', 'POST']
     }
     /* options */
   })
