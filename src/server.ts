@@ -20,6 +20,7 @@ import SignUpUser from './controllers/signUpUser'
 import { instrument } from '@socket.io/admin-ui'
 import fs from 'fs'
 import https from 'https'
+import subNotifications from './controllers/subNotifications'
 
 async function run() {
   let credentials: { key: string; cert: string }
@@ -76,7 +77,8 @@ async function run() {
     getRooms,
     getUser,
     getUnreadMessagesCount,
-    SignUpUser
+    SignUpUser,
+    subNotifications
   ])
 
   instrument(io, {
