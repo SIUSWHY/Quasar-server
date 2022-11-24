@@ -18,7 +18,6 @@ function socketLogic(
 
   io.on('connection', async (socket) => {
     let token: any = socket.handshake.query.token
-    let chatType: any
     let user: any
     let room: RoomType
 
@@ -122,8 +121,7 @@ function socketLogic(
         })
       })
 
-      console.log(`
-      ${user.name} - connected`)
+      console.log(`⚡: ${user.name} - connected`)
 
       // socket.on('get_all_user_status', () => {
       //   const arrUsersStatus: { userId: string; isOnline: boolean }[] = []

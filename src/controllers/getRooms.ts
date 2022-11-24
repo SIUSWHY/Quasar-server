@@ -9,7 +9,6 @@ getRooms.post(
   verifyToken,
   async (req: any, res: any, _next: any) => {
     const userId: ObjectId = req.body._id
-    console.log(userId)
 
     const Rooms = await Room.find({ users_id: userId }).populate('users_id')
 

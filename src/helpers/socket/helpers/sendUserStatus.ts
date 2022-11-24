@@ -1,5 +1,3 @@
-import { Socket } from 'socket.io'
-import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 import { UserType } from '../../../types/userType'
 
 function sendUserStatus(
