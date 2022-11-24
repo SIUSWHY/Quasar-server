@@ -68,7 +68,7 @@ function socketLogic(
       socket.on('get_companion_id', async (data) => {
         if (!Boolean(room.roomId)) {
           const roomData: RoomType = {
-            roomId: `${Date.now()}`,
+            roomId: makeIdForRoom(20).toString(),
             chatType: 'double',
             users_id: [user._id, data.companionId]
           }
@@ -121,7 +121,7 @@ function socketLogic(
         })
       })
 
-      console.log(`⚡: ${user.name} - connected`)
+      console.log(`✅: ${user.name} - connected`)
 
       // socket.on('get_all_user_status', () => {
       //   const arrUsersStatus: { userId: string; isOnline: boolean }[] = []
@@ -138,8 +138,7 @@ function socketLogic(
       })
 
       socket.on('disconnect', () => {
-        console.log(`
-        ${user.name} - disconnected`)
+        console.log(`❌: ${user.name} - disconnected`)
       })
 
       socket.on('get_data_for_group', async (data) => {
