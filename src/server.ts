@@ -42,6 +42,7 @@ async function run() {
     cors: {
       origin: [
         'https://192.168.88.47:8080',
+        'https://192.168.105.25:8080',
         'https://quasar-client.onrender.com',
         '*'
       ],
