@@ -38,7 +38,7 @@ async function run() {
 
   const io = new Server(httpServer, {
     cors: {
-      origin: [process.env.DEV_API_URL, 'https://192.168.105.25:8080', 'https://quasar-client.onrender.com', '*'],
+      origin: '*',
       methods: ['GET', 'POST'],
     },
     /* options */
@@ -55,7 +55,7 @@ async function run() {
       pass: process.env.DB_PASS,
     })
     .then(() => {
-      console.log('Connection to the Atlas Cluster is successful!');
+      console.log('✅: Connection to the Atlas Cluster is successful!');
     })
     .catch(err => console.error(err));
 
@@ -78,8 +78,7 @@ async function run() {
   socketLogic(io);
 
   httpServer.listen(port, () =>
-    console.log(`
-  Example app listening on port ${port}!
+    console.log(`🔥: Example app listening on port ${port}!
   `)
   );
 }
