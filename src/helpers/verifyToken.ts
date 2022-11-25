@@ -1,13 +1,13 @@
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
 
 function verifyToken(req: any, _res: any, next: any) {
-  let token = req.headers.authorization.split(' ').pop()
+  let token = req.headers.authorization.split(' ').pop();
 
   // verify a token symmetric - synchronous
-  let decoded = jwt.verify(token, process.env.JWT_KEY)
+  let decoded = jwt.verify(token, process.env.JWT_KEY);
 
-  req.data = decoded
-  next()
+  req.data = decoded;
+  next();
 }
 
-export default verifyToken
+export default verifyToken;

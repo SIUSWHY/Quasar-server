@@ -7,6 +7,7 @@
     "build": "npm install --also=dev && tsc",
     "start": "node dist/server.js",
     "dev": "npx ts-node-dev src/server.ts",
+    "format": "prettier --write \"**/*.{js,ts,md,json}\" --ignore-path .gitignore",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Daniil Ventsov <daniil.ventsov@progforce.com>",
@@ -27,6 +28,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.5.2",
     "multer": "^1.4.5-lts.1",
+    "prettier": "^2.8.0",
     "socket.io": "^4.5.1",
     "ts-node-dev": "^2.0.0"
   },
