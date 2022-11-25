@@ -1,9 +1,9 @@
-import bcrypt from 'bcryptjs'
+import bcrypt from 'bcryptjs';
 
 async function cryptPassword(password: string) {
-  const salt = await bcrypt.genSalt(10)
-  const hash = await bcrypt.hash(password, salt)
+  const salt = await bcrypt.genSalt(10);
+  const hash = await bcrypt.hash(password, salt);
 
-  return hash
+  return hash;
 }
-export default cryptPassword
+export default cryptPassword;

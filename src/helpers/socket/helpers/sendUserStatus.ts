@@ -1,16 +1,11 @@
-import { UserType } from '../../../types/userType'
+import { UserType } from '../../../types/userType';
 
-function sendUserStatus(
-  status: boolean,
-  user: UserType,
-  clients: Map<string, string>,
-  io: any
-) {
+function sendUserStatus(status: boolean, user: UserType, clients: Map<string, string>, io: any) {
   for (const socketId of clients.values()) {
     io.to(socketId).emit('send_online_status', {
       userId: user._id,
-      isOnline: status
-    })
+      isOnline: status,
+    });
   }
 }
-export default sendUserStatus
+export default sendUserStatus;

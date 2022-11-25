@@ -1,127 +1,118 @@
-import jwt from 'jsonwebtoken'
-import { Server } from 'socket.io'
-import { DefaultEventsMap } from 'socket.io/dist/typed-events'
-import modelMessage from '../../models/modelMessage'
-import saveMessageToDb from './helpers/saveMessage'
-import modelRoom from '../../models/modelRoom'
-import { RoomType } from '../../types/roomType'
-import { UserType } from '../../types/userType'
-import createGroupRoom from './helpers/createGroupRoom'
-import sendUserStatus from './helpers/sendUserStatus'
-import makeIdForRoom from './helpers/createIdString'
-import loginUserByQr from './helpers/loginUserByQR'
+import jwt from 'jsonwebtoken';
+import { Server } from 'socket.io';
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
+import modelMessage from '../../models/modelMessage';
+import saveMessageToDb from './helpers/saveMessage';
+import modelRoom from '../../models/modelRoom';
+import { RoomType } from '../../types/roomType';
+import { UserType } from '../../types/userType';
+import createGroupRoom from './helpers/createGroupRoom';
+import sendUserStatus from './helpers/sendUserStatus';
+import makeIdForRoom from './helpers/createIdString';
+import loginUserByQr from './helpers/loginUserByQR';
 
-function socketLogic(
-  io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
-) {
-  const clients = new Map<string, string>()
+function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) {
+  const clients = new Map<string, string>();
 
-  io.on('connection', async (socket) => {
-    let token: any = socket.handshake.query.token
-    let user: any
-    let room: RoomType
+  io.on('connection', async socket => {
+    let token: any = socket.handshake.query.token;
+    let user: any;
+    let room: RoomType;
 
     if (token === 'null') {
       socket.on('is_user_need_qr', async () => {
-        let roomIdForAuthUser = makeIdForRoom(20)
-        await socket.join(roomIdForAuthUser)
+        let roomIdForAuthUser = makeIdForRoom(20);
+        await socket.join(roomIdForAuthUser);
 
         socket.emit('send_room_data_to_clent', {
-          socketId: roomIdForAuthUser
-        })
-      })
+          socketId: roomIdForAuthUser,
+        });
+      });
 
-      socket.on(
-        'send_data_for_auth_user_by_qr',
-        async (data: { socketId: string; userData: UserType }) => {
-          let token = await loginUserByQr(data)
-          token = token
+      socket.on('send_data_for_auth_user_by_qr', async (data: { socketId: string; userData: UserType }) => {
+        let token = await loginUserByQr(data);
+        token = token;
 
-          await socket.join(data.socketId)
+        await socket.join(data.socketId);
 
-          io.to(data.socketId).emit('send_user_token_to_socket', {
-            token: token,
-            roomId: data.socketId
-          })
-        }
-      )
+        io.to(data.socketId).emit('send_user_token_to_socket', {
+          token: token,
+          roomId: data.socketId,
+        });
+      });
 
-      socket.on('destroy_room_for_auth_qr', (data) => {
-        socket.leave(data.roomId)
-      })
+      socket.on('destroy_room_for_auth_qr', data => {
+        socket.leave(data.roomId);
+      });
     } else {
-      user = jwt.verify(token, process.env.JWT_KEY) as UserType
-      room = { roomId: '', chatType: '', users_id: [] }
+      user = jwt.verify(token, process.env.JWT_KEY) as UserType;
+      room = { roomId: '', chatType: '', users_id: [] };
 
-      clients.set(user._id, socket.id)
+      clients.set(user._id, socket.id);
 
-      socket.on('get_room_id', (data) => {
-        console.log(data)
+      socket.on('get_room_id', data => {
+        console.log(data);
 
         if (!Boolean(data.roomId)) {
-          return
+          return;
         }
 
-        room.roomId = data.roomId
-      })
+        room.roomId = data.roomId;
+      });
 
-      socket.on('get_companion_id', async (data) => {
+      socket.on('get_companion_id', async data => {
         if (!Boolean(room.roomId)) {
           const roomData: RoomType = {
             roomId: makeIdForRoom(20).toString(),
             chatType: 'double',
-            users_id: [user._id, data.companionId]
-          }
+            users_id: [user._id, data.companionId],
+          };
 
           room = await modelRoom.findOne({
-            $and: [
-              { users_id: user._id },
-              { users_id: data.companionId },
-              { chatType: 'double' }
-            ]
-          })
+            $and: [{ users_id: user._id }, { users_id: data.companionId }, { chatType: 'double' }],
+          });
 
           if (!room) {
-            room = await modelRoom.create(roomData)
+            room = await modelRoom.create(roomData);
           }
         } else {
-          room = await modelRoom.findOne({ roomId: room.roomId })
+          room = await modelRoom.findOne({ roomId: room.roomId });
         }
 
-        socket.join(room.roomId)
+        socket.join(room.roomId);
 
         const messages = await modelMessage.find({
-          roomId: room.roomId
-        })
+          roomId: room.roomId,
+        });
 
         socket.emit('send_room_data_to_clent', {
           room: room,
-          messages: messages
-        })
-      })
+          messages: messages,
+        });
+      });
 
-      socket.on('save_message_to_db', async (data) => {
+      socket.on('save_message_to_db', async data => {
         if (!room) {
-          throw new Error('NO ROOM')
+          throw new Error('NO ROOM');
         }
 
-        saveMessageToDb(data, room)
+        saveMessageToDb(data, room);
 
-        io.to(room.roomId).emit('sent_message_to_room', { data })
+        io.to(room.roomId).emit('sent_message_to_room', { data });
 
-        room.users_id.forEach((userId) => {
-          const userIdString = userId.toString()
-          const socket_id = clients.get(userIdString)
+        room.users_id.forEach(userId => {
+          const userIdString = userId.toString();
+          const socket_id = clients.get(userIdString);
 
           if (userIdString === user._id) {
-            return
+            return;
           }
 
-          io.to(socket_id).emit('set_new_message_notify', room.roomId)
-        })
-      })
+          io.to(socket_id).emit('set_new_message_notify', room.roomId);
+        });
+      });
 
-      console.log(`✅: ${user.name} - connected`)
+      console.log(`✅: ${user.name} - connected`);
 
       // socket.on('get_all_user_status', () => {
       //   const arrUsersStatus: { userId: string; isOnline: boolean }[] = []
@@ -131,21 +122,21 @@ function socketLogic(
       //   socket.emit('send_all_users_status', arrUsersStatus)
       // })
 
-      sendUserStatus(true, user, clients, io)
+      sendUserStatus(true, user, clients, io);
 
       socket.on('disconnecting', () => {
-        sendUserStatus(false, user, clients, io)
-      })
+        sendUserStatus(false, user, clients, io);
+      });
 
       socket.on('disconnect', () => {
-        console.log(`❌: ${user.name} - disconnected`)
-      })
+        console.log(`❌: ${user.name} - disconnected`);
+      });
 
-      socket.on('get_data_for_group', async (data) => {
-        createGroupRoom(data)
-      })
+      socket.on('get_data_for_group', async data => {
+        createGroupRoom(data);
+      });
     }
-  })
+  });
 }
 
-export default socketLogic
+export default socketLogic;
