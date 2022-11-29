@@ -135,6 +135,11 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
       socket.on('get_data_for_group', async data => {
         createGroupRoom(data);
       });
+
+      socket.on('send_companion_id_for_call_to_server', (data) => {
+        const socket_id = clients.get(data);
+        io.to(socket_id).emit('send_notify_to_companion', user._id)
+      })
     }
   });
 }
