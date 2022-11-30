@@ -137,8 +137,13 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
       });
 
       socket.on('send_companion_id_for_call_to_server', (data) => {
-        const socket_id = clients.get(data);
-        io.to(socket_id).emit('send_notify_to_companion', user._id)
+        console.log(data);
+
+        const socket_id = clients.get(data.companionId);
+        io.to(socket_id).emit('send_notify_to_companion', { userId: user._id, peerId: data.peerId })
+        socket.on('send_peed_id_to_server', (data) => {
+
+        })
       })
     }
   });
