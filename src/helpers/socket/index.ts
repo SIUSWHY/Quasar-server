@@ -141,7 +141,8 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
 
         const socket_id = clients.get(data.companionId);
         io.to(socket_id).emit('send_notify_to_companion', { userId: user._id, peerId: data.peerId })
-        socket.on('send_peed_id_to_server', (data) => {
+        socket.on('send_peer_id_to_server', (data: { peerId: string, userId: string }) => {
+          io.to(data.userId).emit('send_peer_id_to_client', { peerId: data.peerId })
 
         })
       })
