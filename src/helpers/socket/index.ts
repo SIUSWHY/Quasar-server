@@ -114,14 +114,6 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
 
       console.log(`✅: ${user.name} - connected`);
 
-      // socket.on('get_all_user_status', () => {
-      //   const arrUsersStatus: { userId: string; isOnline: boolean }[] = []
-      //   for (const userId of clients.keys()) {
-      //     arrUsersStatus.push({ userId: userId, isOnline: true })
-      //   }
-      //   socket.emit('send_all_users_status', arrUsersStatus)
-      // })
-
       sendUserStatus(true, user, clients, io);
 
       socket.on('disconnecting', () => {
@@ -137,14 +129,20 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
       });
 
       socket.on('send_companion_id_for_call_to_server', (data) => {
-        console.log(data);
-
         const socket_id = clients.get(data.companionId);
         io.to(socket_id).emit('send_notify_to_companion', { userId: user._id, peerId: data.peerId })
+
         socket.on('send_peer_id_to_server', (data: { peerId: string, userId: string }) => {
           io.to(data.userId).emit('send_peer_id_to_client', { peerId: data.peerId })
-
         })
+      })
+      socket.on('send_video_status', (data: { video: boolean, userId: string }) => {
+        const socket_id = clients.get(data.userId);
+        io.to(socket_id).emit('send_video_status_to_client', data.video)
+      })
+      socket.on('stop_call', (data: { userId: string }) => {
+        const socket_id = clients.get(data.userId);
+        io.to(socket_id).emit('send_stop_status_to_client')
       })
     }
   });
