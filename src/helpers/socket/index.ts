@@ -3,6 +3,7 @@ import { Server } from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import modelMessage from '../../models/modelMessage';
 import saveMessageToDb from './helpers/saveMessage';
+import callsLogick from './helpers/callsLogick';
 import modelRoom from '../../models/modelRoom';
 import { RoomType } from '../../types/roomType';
 import { UserType } from '../../types/userType';
@@ -128,22 +129,7 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
         createGroupRoom(data);
       });
 
-      socket.on('send_companion_id_for_call_to_server', (data) => {
-        const socket_id = clients.get(data.companionId);
-        io.to(socket_id).emit('send_notify_to_companion', { userId: user._id, peerId: data.peerId })
-
-        socket.on('send_peer_id_to_server', (data: { peerId: string, userId: string }) => {
-          io.to(data.userId).emit('send_peer_id_to_client', { peerId: data.peerId })
-        })
-      })
-      socket.on('send_video_status', (data: { video: boolean, userId: string }) => {
-        const socket_id = clients.get(data.userId);
-        io.to(socket_id).emit('send_video_status_to_client', data.video)
-      })
-      socket.on('stop_call', (data: { userId: string }) => {
-        const socket_id = clients.get(data.userId);
-        io.to(socket_id).emit('send_stop_status_to_client')
-      })
+      callsLogick(socket, io, clients, user)
     }
   });
 }
