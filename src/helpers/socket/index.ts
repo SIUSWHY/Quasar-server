@@ -3,6 +3,7 @@ import { Server } from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import modelMessage from '../../models/modelMessage';
 import saveMessageToDb from './helpers/saveMessage';
+import callsLogick from './helpers/callsLogick';
 import modelRoom from '../../models/modelRoom';
 import { RoomType } from '../../types/roomType';
 import { UserType } from '../../types/userType';
@@ -114,14 +115,6 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
 
       console.log(`✅: ${user.name} - connected`);
 
-      // socket.on('get_all_user_status', () => {
-      //   const arrUsersStatus: { userId: string; isOnline: boolean }[] = []
-      //   for (const userId of clients.keys()) {
-      //     arrUsersStatus.push({ userId: userId, isOnline: true })
-      //   }
-      //   socket.emit('send_all_users_status', arrUsersStatus)
-      // })
-
       sendUserStatus(true, user, clients, io);
 
       socket.on('disconnecting', () => {
@@ -135,6 +128,8 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
       socket.on('get_data_for_group', async data => {
         createGroupRoom(data);
       });
+
+      callsLogick(socket, io, clients, user)
     }
   });
 }

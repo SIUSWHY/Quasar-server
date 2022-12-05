@@ -21,6 +21,7 @@ import { instrument } from '@socket.io/admin-ui';
 import readMessagesFromChat from './controllers/readMessagesFromChat';
 import https from 'https';
 import fs from 'fs';
+import getCallsLogs from './controllers/getCallsLog';
 
 async function run() {
   let credentials: { key: string; cert: string };
@@ -69,6 +70,7 @@ async function run() {
     getUnreadMessagesCount,
     SignUpUser,
     readMessagesFromChat,
+    getCallsLogs,
   ]);
 
   instrument(io, {
