@@ -11,6 +11,7 @@ import createGroupRoom from './helpers/createGroupRoom';
 import sendUserStatus from './helpers/sendUserStatus';
 import makeIdForRoom from './helpers/createIdString';
 import loginUserByQr from './helpers/loginUserByQR';
+import linkPreviewGenerator from 'link-preview-generator';
 
 function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) {
   const clients = new Map<string, string>();
@@ -117,6 +118,12 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
 
       sendUserStatus(true, user, clients, io);
 
+      socket.on('send_url_to_server', async data => {
+        const previewData = await linkPreviewGenerator(data);
+
+        socket.emit('send_url_result_to_client', previewData);
+      });
+
       socket.on('disconnecting', () => {
         sendUserStatus(false, user, clients, io);
       });
@@ -129,7 +136,7 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
         createGroupRoom(data);
       });
 
-      callsLogick(socket, io, clients, user)
+      callsLogick(socket, io, clients, user);
     }
   });
 }
