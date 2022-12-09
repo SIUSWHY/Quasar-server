@@ -7,6 +7,12 @@ const MessageSchema = new Schema<MessageType>({
   userId: String,
   roomId: String,
   whoRead: Array<ObjectId>,
+  urlData: {
+    title: String,
+    description: String,
+    img: String,
+    url: String
+  }
 });
 
 export default model<MessageType>('Message', MessageSchema);

@@ -11,7 +11,8 @@ import createGroupRoom from './helpers/createGroupRoom';
 import sendUserStatus from './helpers/sendUserStatus';
 import makeIdForRoom from './helpers/createIdString';
 import loginUserByQr from './helpers/loginUserByQR';
-import linkPreviewGenerator from 'link-preview-generator';
+import { MessageType } from '../../types/messageType';
+import link_preview_generator from 'link-preview-generator';
 
 function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) {
   const clients = new Map<string, string>();
@@ -93,14 +94,28 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
         });
       });
 
-      socket.on('save_message_to_db', async data => {
+      socket.on('save_message_to_db', async (data: { message: MessageType }) => {
         if (!room) {
           throw new Error('NO ROOM');
         }
 
-        saveMessageToDb(data, room);
+        if (data.message.url) {
+          const { title, description, img } = await link_preview_generator(data.message.url);
+          const urlData = { title, description, img, url: data.message.url }
 
-        io.to(room.roomId).emit('sent_message_to_room', { data });
+          const messText: string = data.message.messageText.pop()
+          const text = messText.replace(urlData.url, '')
+
+          saveMessageToDb(data, room, text, urlData);
+          const message = { ...data.message, messageText: [text], urlData: urlData }
+
+          io.to(room.roomId).emit('sent_message_to_room', { message });
+        } else {
+          saveMessageToDb(data, room,);
+          io.to(room.roomId).emit('sent_message_to_room', { message: data.message });
+        }
+
+
 
         room.users_id.forEach(userId => {
           const userIdString = userId.toString();
@@ -117,12 +132,6 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
       console.log(`✅: ${user.name} - connected`);
 
       sendUserStatus(true, user, clients, io);
-
-      socket.on('send_url_to_server', async data => {
-        const previewData = await linkPreviewGenerator(data);
-
-        socket.emit('send_url_result_to_client', previewData);
-      });
 
       socket.on('disconnecting', () => {
         sendUserStatus(false, user, clients, io);
