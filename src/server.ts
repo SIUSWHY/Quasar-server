@@ -8,7 +8,6 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import getRooms from './controllers/getRooms';
 import socketLogic from './helpers/socket/index';
 import { instrument } from '@socket.io/admin-ui';
 import https from 'https';
@@ -55,7 +54,6 @@ async function run() {
     .catch(err => console.error(err));
 
   app.use([
-    getRooms,
     getCallsLogs,
     additionalRoutes,
   ]);
