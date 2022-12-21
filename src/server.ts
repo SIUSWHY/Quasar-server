@@ -8,11 +8,9 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import LoginUser from './controllers/login';
 import getUnreadMessagesCount from './controllers/getUnreadMessages';
 import getRooms from './controllers/getRooms';
 import socketLogic from './helpers/socket/index';
-import SignUpUser from './controllers/signUpUser';
 import { instrument } from '@socket.io/admin-ui';
 import readMessagesFromChat from './controllers/readMessagesFromChat';
 import https from 'https';
@@ -59,10 +57,8 @@ async function run() {
     .catch(err => console.error(err));
 
   app.use([
-    LoginUser,
     getRooms,
     getUnreadMessagesCount,
-    SignUpUser,
     readMessagesFromChat,
     getCallsLogs,
     additionalRoutes,
