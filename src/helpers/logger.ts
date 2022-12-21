@@ -17,13 +17,13 @@ export const logger = createLogger({
     // - Write all logs error (and below) to `quick-start-error.log`.
     //
     new WinstonDailyRotateFile({
-      dirname: 'src/logs',
+      dirname: process.env.NODE_ENV !== 'production' ? 'src/logs' : 'dist/logs',
       datePattern: 'DD-MM-YYYY',
       filename: 'error.log',
       level: 'error',
     }),
     new WinstonDailyRotateFile({
-      dirname: 'src/logs',
+      dirname: process.env.NODE_ENV !== 'production' ? 'src/logs' : 'dist/logs',
       datePattern: 'DD-MM-YYYY',
       filename: 'combined.log',
     }),
