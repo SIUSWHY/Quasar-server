@@ -8,21 +8,12 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import LoginUser from './controllers/login';
-import getUsers from './controllers/getUsers';
-import getUser from './controllers/getUser';
-import getUnreadMessagesCount from './controllers/getUnreadMessages';
-import getCurrentUser from './controllers/getCurrentUser';
-import getCompanion from './controllers/getCompanion';
-import getRooms from './controllers/getRooms';
 import socketLogic from './helpers/socket/index';
-import SignUpUser from './controllers/signUpUser';
 import { instrument } from '@socket.io/admin-ui';
-import readMessagesFromChat from './controllers/readMessagesFromChat';
 import https from 'https';
 import fs from 'fs';
-import getCallsLogs from './controllers/getCallsLog';
 import { loggerLogic } from './helpers/loggerLogic';
+import additionalRoutes from './routes/index';
 
 async function run() {
   let credentials: { key: string; cert: string };
@@ -61,18 +52,7 @@ async function run() {
     })
     .catch(err => console.error(err));
 
-  app.use([
-    LoginUser,
-    getUsers,
-    getCurrentUser,
-    getCompanion,
-    getRooms,
-    getUser,
-    getUnreadMessagesCount,
-    SignUpUser,
-    readMessagesFromChat,
-    getCallsLogs,
-  ]);
+  app.use(additionalRoutes);
 
   instrument(io, {
     auth: false,
