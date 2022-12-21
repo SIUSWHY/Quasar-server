@@ -22,6 +22,7 @@ import readMessagesFromChat from './controllers/readMessagesFromChat';
 import https from 'https';
 import fs from 'fs';
 import getCallsLogs from './controllers/getCallsLog';
+import { loggerLogic } from './helpers/loggerLogic';
 
 async function run() {
   let credentials: { key: string; cert: string };
@@ -78,6 +79,7 @@ async function run() {
   });
 
   socketLogic(io);
+  loggerLogic();
 
   httpServer.listen(port, () =>
     console.log(`🔥: Example app listening on port ${port}!

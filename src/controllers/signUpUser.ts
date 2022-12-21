@@ -6,6 +6,7 @@ import { s3 } from '../helpers/storage';
 import modelUser from '../models/modelUser';
 import multer from 'multer';
 import fs from 'fs';
+import { logger } from '../helpers/logger';
 
 const SignUpUser = express.Router();
 
@@ -60,9 +61,17 @@ SignUpUser.post('/signUpUser', upload.single('avatar'), async (req, res) => {
         phone,
       });
 
+      logger.log({
+        level: 'info',
+        message: `User ${User.name}:[_id:${User._id}] is signUp`,
+      });
+
       res.send(User);
     } catch (err) {
-      console.log(err);
+      logger.log({
+        level: 'error',
+        message: err,
+      });
     }
   }
 });

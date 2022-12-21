@@ -8,5 +8,5 @@ export const s3 = new EasyYandexS3({
     secretAccessKey: process.env.YANDEX_STORAGE_SECRET_ACESS_KEY,
   },
   Bucket: 'quasar-storage',
-  debug: process.env.NODE_ENV ? true : false,
+  debug: false,
 });

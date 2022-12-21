@@ -3,7 +3,7 @@ import { Server } from 'socket.io';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import modelMessage from '../../models/modelMessage';
 import saveMessageToDb from './helpers/saveMessage';
-import callsLogick from './helpers/callsLogick';
+import callsLogic from './helpers/callsLogic';
 import modelRoom from '../../models/modelRoom';
 import { RoomType } from '../../types/roomType';
 import { UserType } from '../../types/userType';
@@ -13,6 +13,7 @@ import makeIdForRoom from './helpers/createIdString';
 import loginUserByQr from './helpers/loginUserByQR';
 import { MessageType } from '../../types/messageType';
 import link_preview_generator from 'link-preview-generator';
+import { logger } from '../logger';
 
 function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) {
   const clients = new Map<string, string>();
@@ -141,11 +142,18 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
         console.log(`❌: ${user.name} - disconnected`);
       });
 
+      socket.on('user_is_logout',()=>{
+        logger.log({
+          level: 'info',
+          message: `User ${user.name}:[_id:${user._id}] logout`,
+        });
+      })
+
       socket.on('get_data_for_group', async data => {
         createGroupRoom(data);
       });
 
-      callsLogick(socket, io, clients, user);
+      callsLogic(socket, io, clients, user);
     }
   });
 }

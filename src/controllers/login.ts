@@ -3,6 +3,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import createToken from '../helpers/createToken';
 import { UserType } from '../types/userType';
+import { logger } from '../helpers/logger';
 const LoginUser = express.Router();
 
 LoginUser.post('/loginUser', async (req, res) => {
@@ -29,11 +30,20 @@ LoginUser.post('/loginUser', async (req, res) => {
         phone,
         _id,
       });
-      return res.status(200).send({ massege: 'You login. Welcome', user, token });
+
+      logger.log({
+        level: 'info',
+        message: `User ${user.name}:[_id:${user._id}] is signIn`,
+      });
+
+      return res.status(200).send({ message: 'You login. Welcome', user, token });
     }
     return res.status(400).send({ message: 'User not found', type: 'negative' });
   } catch (error) {
-    console.log(error);
+    logger.log({
+      level: 'error',
+      message: error,
+    });
   }
 });
 
