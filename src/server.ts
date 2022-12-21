@@ -8,11 +8,9 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import getUnreadMessagesCount from './controllers/getUnreadMessages';
 import getRooms from './controllers/getRooms';
 import socketLogic from './helpers/socket/index';
 import { instrument } from '@socket.io/admin-ui';
-import readMessagesFromChat from './controllers/readMessagesFromChat';
 import https from 'https';
 import fs from 'fs';
 import getCallsLogs from './controllers/getCallsLog';
@@ -58,8 +56,6 @@ async function run() {
 
   app.use([
     getRooms,
-    getUnreadMessagesCount,
-    readMessagesFromChat,
     getCallsLogs,
     additionalRoutes,
   ]);
