@@ -16,13 +16,17 @@ export const logger = createLogger({
     // - Write to all logs with level `info` and below to `quick-start-combined.log`.
     // - Write all logs error (and below) to `quick-start-error.log`.
     //
-    new transports.File({ dirname: 'src/logs', filename: 'quick-start-error.log', level: 'error' }),
-    new transports.File({ dirname: 'src/logs', filename: 'quick-start-combined.log' }),
-    // new WinstonDailyRotateFile({
-    //   dirname: 'src/logs',
-    //   datePattern: 'DD-MM-YY',
-    //   filename: 'quick-start-error.log',
-    // }),
+    new WinstonDailyRotateFile({
+      dirname: 'src/logs',
+      datePattern: 'DD-MM-YYYY',
+      filename: 'error.log',
+      level: 'error',
+    }),
+    new WinstonDailyRotateFile({
+      dirname: 'src/logs',
+      datePattern: 'DD-MM-YYYY',
+      filename: 'combined.log',
+    }),
   ],
 });
 

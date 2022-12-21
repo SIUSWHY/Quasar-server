@@ -68,7 +68,10 @@ SignUpUser.post('/signUpUser', upload.single('avatar'), async (req, res) => {
 
       res.send(User);
     } catch (err) {
-      console.log(err);
+      logger.log({
+        level: 'error',
+        message: err,
+      });
     }
   }
 });
