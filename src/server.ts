@@ -12,9 +12,8 @@ import socketLogic from './helpers/socket/index';
 import { instrument } from '@socket.io/admin-ui';
 import https from 'https';
 import fs from 'fs';
-import getCallsLogs from './controllers/getCallsLog';
 import { loggerLogic } from './helpers/loggerLogic';
-import additionalRoutes from './routes/index'
+import additionalRoutes from './routes/index';
 
 async function run() {
   let credentials: { key: string; cert: string };
@@ -53,10 +52,7 @@ async function run() {
     })
     .catch(err => console.error(err));
 
-  app.use([
-    getCallsLogs,
-    additionalRoutes,
-  ]);
+  app.use(additionalRoutes);
 
   instrument(io, {
     auth: false,
