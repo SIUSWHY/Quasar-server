@@ -14,6 +14,7 @@ import https from 'https';
 import fs from 'fs';
 import { loggerLogic } from './helpers/loggerLogic';
 import additionalRoutes from './routes/index';
+import cron from 'node-cron';
 
 async function run() {
   let credentials: { key: string; cert: string };
@@ -59,7 +60,10 @@ async function run() {
   });
 
   socketLogic(io);
-  loggerLogic();
+
+  cron.schedule('00 59 * * * *', () => {
+    loggerLogic();
+  });
 
   httpServer.listen(port, () =>
     console.log(`🔥: Example app listening on port ${port}!
