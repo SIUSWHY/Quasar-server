@@ -2,8 +2,8 @@ name: build-server
 run-name: ${{ github.actor }} is trigger rebuild server
 on: [push]
 jobs:
-  rebuild-server:
-     runs-on: ubuntu-20.04
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
