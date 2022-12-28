@@ -12,5 +12,5 @@
       "*": ["node_modules/*"]
     }
   },
-  "include": ["*", "src/server.ts", "src/types", "src/controllers", "src/routes/Health.ts"]
+  "include": ["*", "src/server.ts", "src/types", "src/controllers"]
 }
