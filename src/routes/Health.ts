@@ -1,8 +1,8 @@
 import express from 'express';
 import * as HealthController from '../controllers/Health';
 
-const callHealth = express.Router();
+const healthRoutes = express.Router();
 
-callHealth.post('/', HealthController.getHealth);
+healthRoutes.get('/', HealthController.getHealth);
 
-export default callHealth;
+export default healthRoutes;
