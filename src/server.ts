@@ -61,7 +61,7 @@ async function run() {
 
   socketLogic(io);
 
-  cron.schedule('0-59 * * * *', () => {
+  cron.schedule('0 * * * *', () => {
     loggerLogic();
   });
 
