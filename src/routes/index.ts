@@ -5,6 +5,7 @@ import AccountRoutes from './Account'
 import MessagesRotes from './Messages';
 import RoomRotes from './Room';
 import CallRotes from './Calls';
+import HealthRotes from './Health';
 
 const routes = Router();
 
@@ -13,5 +14,6 @@ routes.use('/message', verifyToken, MessagesRotes);
 routes.use('/room', verifyToken, RoomRotes);
 routes.use('/call', verifyToken, CallRotes);
 routes.use('/account', AccountRoutes);
+routes.use('/', HealthRotes);
 
 export default routes;
