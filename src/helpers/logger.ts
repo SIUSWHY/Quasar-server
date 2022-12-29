@@ -12,20 +12,16 @@ export const logger = createLogger({
     format.json()
   ),
   transports: [
-    //
-    // - Write to all logs with level `info` and below to `quick-start-combined.log`.
-    // - Write all logs error (and below) to `quick-start-error.log`.
-    //
     new WinstonDailyRotateFile({
       dirname: process.env.NODE_ENV !== 'production' ? 'src/logs' : 'dist/logs',
       datePattern: 'DD-MM-YYYY',
-      filename: 'error.log',
+      filename: '%DATE%.error.log',
       level: 'error',
     }),
     new WinstonDailyRotateFile({
       dirname: process.env.NODE_ENV !== 'production' ? 'src/logs' : 'dist/logs',
       datePattern: 'DD-MM-YYYY',
-      filename: 'combined.log',
+      filename: '%DATE%.combined.log',
     }),
   ],
 });

@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongoose';
 import modelRoom from '../../../models/modelRoom';
+import makeIdForRoom from './createIdString';
 
 async function createGroupRoom(data: {
   groupName: string;
@@ -10,7 +11,7 @@ async function createGroupRoom(data: {
   const { groupName, groupImage, groupMembers, groupType } = data;
 
   await modelRoom.create({
-    roomId: `${Date.now()}`,
+    roomId: makeIdForRoom(20).toString(),
     chatType: groupType,
     users_id: groupMembers,
     room_img: groupImage,

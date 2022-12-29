@@ -61,10 +61,7 @@ async function run() {
 
   socketLogic(io);
 
-  cron.schedule('0 * * * *', () => {
-    loggerLogic();
-  });
-
+  cron.schedule('0 * * * *', () => loggerLogic(), { timezone: 'Europe/Moscow' });
 
   httpServer.listen(port, () =>
     console.log(`🔥: Example app listening on port ${port}!
