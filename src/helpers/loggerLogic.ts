@@ -14,7 +14,7 @@ export async function loggerLogic() {
     logsPref.forEach(async key => {
       await s3.Upload(
         {
-          path: path.join(__dirname, '/../logs/', key + '.' + formatDate),
+          path: path.join(__dirname, '/../logs/', formatDate + '.' + key),
           save_name: true,
         },
         '/logs/'
