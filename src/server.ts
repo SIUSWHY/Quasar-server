@@ -15,6 +15,7 @@ import fs from 'fs';
 import { loggerLogic } from './helpers/loggerLogic';
 import additionalRoutes from './routes/index';
 import cron from 'node-cron';
+import { logger } from './helpers/logger';
 
 async function run() {
   let credentials: { key: string; cert: string };
@@ -51,7 +52,12 @@ async function run() {
     .then(() => {
       console.log('✅: Connection to the Atlas Cluster is successful!');
     })
-    .catch(err => console.error(err));
+    .catch(err => {
+      logger.log({
+        level: 'error',
+        message: err,
+      });
+    });
 
   app.use(additionalRoutes);
 
