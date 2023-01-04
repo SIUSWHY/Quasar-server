@@ -6,7 +6,8 @@ export async function loggerLogic() {
   const date = new Date();
   const lastWeek = 7 * 24 * 60 * 60 * 1000;
   const offSetDate = new Date(date.valueOf() - lastWeek);
-  const formatDate = [date.getDate(), date.getMonth() + 1, date.getFullYear()].join('-');
+  const dayOfDate = date.getDate().toString().length !== 2 ? '0' + date.getDate() : date.getDate();
+  const formatDate = [dayOfDate, date.getMonth() + 1, date.getFullYear()].join('-');
 
   const logsPref = ['error.log', 'combined.log'];
 
