@@ -7,12 +7,14 @@ export async function loggerLogic() {
   const lastWeek = 7 * 24 * 60 * 60 * 1000;
   const offSetDate = new Date(date.valueOf() - lastWeek);
   const dayOfDate = date.getDate().toString().length !== 2 ? '0' + date.getDate() : date.getDate();
-  const formatDate = [dayOfDate, date.getMonth() + 1, date.getFullYear()].join('-');
+  const monthOfDate = (date.getMonth() + 1).toString().length !== 2 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1;
+  const formatDate = [dayOfDate, monthOfDate, date.getFullYear()].join('-');
 
   const logsPref = ['error.log', 'combined.log'];
 
   if (process.env.NODE_ENV !== 'development') {
-    logsPref.forEach(async key => {
+    logsPref.forEach(async (key: string) => {
+      console.log(path.join(__dirname, '/../logs/', formatDate + '.' + key));
       await s3.Upload(
         {
           path: path.join(__dirname, '/../logs/', formatDate + '.' + key),
