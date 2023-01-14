@@ -5,5 +5,6 @@ const accountRoutes = express.Router();
 
 accountRoutes.post('/signIn', AccountController.login);
 accountRoutes.get('/signUp', AccountController.signUp);
+accountRoutes.post('/delete', AccountController.deleteAccount);
 
 export default accountRoutes;

@@ -5,9 +5,11 @@ import fs from 'fs';
 export async function loggerLogic() {
   const date = new Date();
   const lastWeek = 7 * 24 * 60 * 60 * 1000;
+
   const offSetDate = new Date(date.valueOf() - lastWeek);
   const dayOfDate = date.getDate().toString().length !== 2 ? '0' + date.getDate() : date.getDate();
   const monthOfDate = (date.getMonth() + 1).toString().length !== 2 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1;
+
   const formatDate = [dayOfDate, monthOfDate, date.getFullYear()].join('-');
 
   const logsPref = ['error.log', 'combined.log'];
