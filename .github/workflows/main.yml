@@ -7,9 +7,9 @@ jobs:
     steps:
       - name: Pull last changes
         run: git checkout master && git pull origin master
-      - name: Del node_modules
-        run: rm -Rf ./node_modules 
       - name: Install dependencies
-        run: npm i
-      - name: Run server
-        run: npm run dev
+        run: npm ci
+      - name: Build server
+        run: npm run build
+      - name: Start pm2
+        run: cd ./dist && pm2 start server.js
