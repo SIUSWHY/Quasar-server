@@ -50,6 +50,7 @@ const login = async function (req: any, res: any) {
 };
 
 const signUp = async function (req: any, res: any) {
+  console.log(req.body);
   const {
     phone,
     password,
