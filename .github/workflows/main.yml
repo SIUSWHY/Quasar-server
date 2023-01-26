@@ -16,4 +16,4 @@ jobs:
       - name: Build server
         run: npm run build
       - name: Start pm2
-        run: cd ./dist && pm2 start server.js
+        run: cd ./dist && pm2 restart all
