@@ -6,8 +6,10 @@ on:
   pull_request:
     branches: [ "master" ]
 jobs:
-  Explore-GitHub-Actions:
+  CI_CD:
     runs-on: self-hosted
+    environment: 
+      name: Production
     steps:
       - name: Pull last changes
         run: git checkout master && git pull origin master
