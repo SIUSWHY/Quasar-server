@@ -1,5 +1,5 @@
 const getHealth = async function (_req: any, res: any) {
-  res.send({ health: 'OK' });
+  res.status(200).send({ health: 'OK' });
 };
 
 export { getHealth };
