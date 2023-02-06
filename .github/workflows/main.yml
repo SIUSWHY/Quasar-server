@@ -1,15 +1,19 @@
 name: build-server
 run-name: ${{ github.actor }} is trigger rebuild server
-on: [push]
+on:  
+  pull_request:
+    branches: [ "master" ]
 jobs:
-  Explore-GitHub-Actions:
+  CI_CD:
     runs-on: self-hosted
+    environment: 
+      name: Production
     steps:
       - name: Pull last changes
         run: git checkout master && git pull origin master
-      - name: Del node_modules
-        run: rm -Rf ./node_modules 
       - name: Install dependencies
-        run: npm i
-      - name: Run server
-        run: npm run dev
+        run: npm ci
+      - name: Build server
+        run: npm run build
+      - name: Start pm2
+        run: cd ./dist && pm2 restart all
