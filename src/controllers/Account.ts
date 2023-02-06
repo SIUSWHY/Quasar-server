@@ -50,6 +50,7 @@ const login = async function (req: any, res: any) {
 };
 
 const signUp = async function (req: any, res: any) {
+  console.log(req.body);
   const {
     phone,
     password,
@@ -103,4 +104,25 @@ const signUp = async function (req: any, res: any) {
   }
 };
 
-export { login, signUp };
+const deleteAccount = async function (req: any, res: any) {
+  const { _id } = req.body;
+  try {
+    const user: UserType = await User.findOne({ _id });
+    await s3.Remove('avatars/' + user.avatar);
+    await User.deleteOne({ _id });
+
+    logger.log({
+      level: 'info',
+      message: `User ${user.name}:[_id:${user._id}] is delete account`,
+    });
+
+    return res.status(200).send({ message: 'Your account deleted' });
+  } catch (err) {
+    logger.log({
+      level: 'error',
+      message: err,
+    });
+  }
+};
+
+export { login, signUp, deleteAccount };
