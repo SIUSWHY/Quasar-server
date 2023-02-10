@@ -28,7 +28,7 @@ async function run() {
   const httpServer = process.env.NODE_ENV === 'development' ? https.createServer(credentials, app) : createServer(app);
 
   const io = new Server(httpServer, {
-    path: '/api3/',
+    path: '/socket/',
     cors: {
       origin: '*',
       methods: ['GET', 'POST'],
