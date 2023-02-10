@@ -1,6 +1,8 @@
 name: build-server
 run-name: ${{ github.actor }} is trigger rebuild server
 on:  
+  push:
+    branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
 jobs:
