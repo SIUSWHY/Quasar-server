@@ -39,8 +39,6 @@ async function callsLogic(
       });
       socket.emit('send_call_log', call);
       io.to(data.comUserId).emit('send_call_log_to_companion', call);
-
-      console.log(call);
     }
   );
 }

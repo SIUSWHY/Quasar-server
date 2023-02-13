@@ -7,6 +7,7 @@ const RoomSchema = new Schema<RoomType>({
   users_id: [{ type: Schema.Types.ObjectId, ref: 'Users' }],
   room_img: { type: String, default: '' },
   room_name: { type: String, default: '' },
+  adminUserId: String,
 });
 
 export default model<RoomType>('Room', RoomSchema);

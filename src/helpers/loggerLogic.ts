@@ -16,7 +16,7 @@ export async function loggerLogic() {
 
   if (process.env.NODE_ENV !== 'development') {
     logsPref.forEach(async (key: string) => {
-      console.log(path.join(__dirname, '/../logs/', formatDate + '.' + key));
+      // console.log(path.join(__dirname, '/../logs/', formatDate + '.' + key));
       await s3.Upload(
         {
           path: path.join(__dirname, '/../logs/', formatDate + '.' + key),

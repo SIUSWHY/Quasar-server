@@ -55,8 +55,6 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
       clients.set(user._id, socket.id);
 
       socket.on('get_room_id', data => {
-        console.log(data);
-
         if (!Boolean(data.roomId)) {
           return;
         }
@@ -102,21 +100,19 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
 
         if (data.message.url) {
           const { title, description, img } = await link_preview_generator(data.message.url);
-          const urlData = { title, description, img, url: data.message.url }
+          const urlData = { title, description, img, url: data.message.url };
 
-          const messText: string = data.message.messageText.pop()
-          const text = messText.replace(urlData.url, '')
+          const messText: string = data.message.messageText.pop();
+          const text = messText.replace(urlData.url, '');
 
           saveMessageToDb(data, room, text, urlData);
-          const message = { ...data.message, messageText: [text], urlData: urlData }
+          const message = { ...data.message, messageText: [text], urlData: urlData };
 
           io.to(room.roomId).emit('sent_message_to_room', { message });
         } else {
-          saveMessageToDb(data, room,);
+          saveMessageToDb(data, room);
           io.to(room.roomId).emit('sent_message_to_room', { message: data.message });
         }
-
-
 
         room.users_id.forEach(userId => {
           const userIdString = userId.toString();
@@ -142,12 +138,12 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
         console.log(`❌: ${user.name} - disconnected`);
       });
 
-      socket.on('user_is_logout',()=>{
+      socket.on('user_is_logout', () => {
         logger.log({
           level: 'info',
           message: `User ${user.name}:[_id:${user._id}] logout`,
         });
-      })
+      });
 
       socket.on('get_data_for_group', async data => {
         createGroupRoom(data);

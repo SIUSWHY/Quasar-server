@@ -8,6 +8,8 @@ import cryptPassword from '../helpers/hashPassword';
 import { s3 } from '../helpers/storage';
 import modelUser from '../models/modelUser';
 
+const s3_url = 'https://quasar-storage.storage.yandexcloud.net/avatars/';
+
 const login = async function (req: any, res: any) {
   try {
     const { name, password }: { name: string; password: string } = req.body;
@@ -50,7 +52,6 @@ const login = async function (req: any, res: any) {
 };
 
 const signUp = async function (req: any, res: any) {
-  console.log(req.body);
   const {
     phone,
     password,
@@ -122,7 +123,7 @@ const changeUserAvatar = async function (req: any, res: any) {
         '/avatars/'
       );
 
-      await s3.Remove('avatars/' + user.avatar);
+      await s3.Remove('avatars/' + user.avatar.replace(s3_url, ''));
 
       const patchUser = await User.findByIdAndUpdate({ _id: id }, { avatar: upload.Location }, { new: true });
 
@@ -145,7 +146,7 @@ const deleteAccount = async function (req: any, res: any) {
   const { _id } = req.body;
   try {
     const user: UserType = await User.findOne({ _id });
-    await s3.Remove('avatars/' + user.avatar);
+    await s3.Remove('avatars/' + user.avatar.replace(s3_url, ''));
     await User.deleteOne({ _id });
 
     logger.log({
