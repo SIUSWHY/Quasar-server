@@ -104,6 +104,43 @@ const signUp = async function (req: any, res: any) {
   }
 };
 
+const changeUserAvatar = async function (req: any, res: any) {
+  const { id }: { id: string } = req.body;
+
+  const user: UserType = await User.findOne({
+    _id: id,
+  });
+
+  if (Boolean(user)) {
+    try {
+      const img = fs.readFileSync(req.file!.path);
+
+      const upload = await s3.Upload(
+        {
+          buffer: img,
+        },
+        '/avatars/'
+      );
+
+      await s3.Remove('avatars/' + user.avatar);
+
+      const patchUser = await User.findByIdAndUpdate({ _id: id }, { avatar: upload.Location }, { new: true });
+
+      logger.log({
+        level: 'info',
+        message: `User ${user.name}:[_id:${user._id}] change avatar`,
+      });
+
+      res.send(patchUser);
+    } catch (err) {
+      logger.log({
+        level: 'error',
+        message: err,
+      });
+    }
+  }
+};
+
 const deleteAccount = async function (req: any, res: any) {
   const { _id } = req.body;
   try {
@@ -125,4 +162,4 @@ const deleteAccount = async function (req: any, res: any) {
   }
 };
 
-export { login, signUp, deleteAccount };
+export { login, signUp, deleteAccount, changeUserAvatar };

@@ -5,7 +5,7 @@ const UserSchema = new Schema<UserType>({
   name: String,
   password: String,
   email: String,
-  avatar: {},
+  avatar: String,
   phone: String,
 });
 

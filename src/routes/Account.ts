@@ -6,6 +6,8 @@ const accountRoutes = express.Router();
 
 accountRoutes.post('/signIn', AccountController.login);
 accountRoutes.post('/signUp', multerMiddleware('avatar'), AccountController.signUp);
+accountRoutes.patch('/changeUserAvatar', multerMiddleware('avatar'), AccountController.changeUserAvatar);
 accountRoutes.post('/delete', AccountController.deleteAccount);
 
 export default accountRoutes;
+  
