@@ -1,3 +1,7 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 import { createLogger, format, transports } from 'winston';
 import WinstonDailyRotateFile from 'winston-daily-rotate-file';
 
