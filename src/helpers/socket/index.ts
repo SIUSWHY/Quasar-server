@@ -23,32 +23,32 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
     let user: any;
     let room: RoomType;
 
-    if (token === 'null') {
-      socket.on('is_user_need_qr', async () => {
-        let roomIdForAuthUser = makeIdForRoom(20);
-        await socket.join(roomIdForAuthUser);
+    socket.on('is_user_need_qr', async () => {
+      let roomIdForAuthUser = makeIdForRoom(20);
+      await socket.join(roomIdForAuthUser);
 
-        socket.emit('send_room_data_to_clent', {
-          socketId: roomIdForAuthUser,
-        });
+      socket.emit('send_room_data_to_clent', {
+        socketId: roomIdForAuthUser,
       });
+    });
 
-      socket.on('send_data_for_auth_user_by_qr', async (data: { socketId: string; userData: UserType }) => {
-        let token = await loginUserByQr(data);
-        token = token;
+    socket.on('send_data_for_auth_user_by_qr', async (data: { socketId: string; userData: UserType }) => {
+      let token = await loginUserByQr(data);
+      token = token;
 
-        await socket.join(data.socketId);
+      await socket.join(data.socketId);
 
-        io.to(data.socketId).emit('send_user_token_to_socket', {
-          token: token,
-          roomId: data.socketId,
-        });
+      io.to(data.socketId).emit('send_user_token_to_socket', {
+        token: token,
+        roomId: data.socketId,
       });
+    });
 
-      socket.on('destroy_room_for_auth_qr', data => {
-        socket.leave(data.roomId);
-      });
-    } else {
+    socket.on('destroy_room_for_auth_qr', data => {
+      socket.leave(data.roomId);
+    });
+
+    if (token !== 'null') {
       user = jwt.verify(token, process.env.JWT_KEY) as UserType;
       room = { roomId: '', chatType: '', users_id: [] };
 
