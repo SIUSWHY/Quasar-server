@@ -5,4 +5,5 @@ export interface UserType {
   email: string;
   phone: string;
   avatar: string;
+  isDarkMode: boolean;
 }

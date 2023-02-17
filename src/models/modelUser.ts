@@ -7,6 +7,7 @@ const UserSchema = new Schema<UserType>({
   email: String,
   avatar: String,
   phone: String,
+  isDarkMode: { default: true, type: Boolean },
 });
 
 export default model<UserType>('Users', UserSchema);
