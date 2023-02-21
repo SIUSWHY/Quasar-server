@@ -105,6 +105,20 @@ const signUp = async function (req: any, res: any) {
   }
 };
 
+const changeUserTheme = async function (req: any, res: any) {
+  const { _id, value }: { _id: string; value: boolean } = req.body;
+
+  try {
+    await User.findByIdAndUpdate({ _id }, { isDarkMode: value }, { new: true });
+    return res.status(200).send({ message: 'Your theme change' });
+  } catch (err) {
+    logger.log({
+      level: 'error',
+      message: err,
+    });
+  }
+};
+
 const changeUserAvatar = async function (req: any, res: any) {
   const { id }: { id: string } = req.body;
 
@@ -163,4 +177,4 @@ const deleteAccount = async function (req: any, res: any) {
   }
 };
 
-export { login, signUp, deleteAccount, changeUserAvatar };
+export { login, signUp, deleteAccount, changeUserAvatar, changeUserTheme };
