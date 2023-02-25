@@ -6,5 +6,6 @@ const roomRoutes = express.Router();
 
 roomRoutes.post('/all', RoomController.getRooms);
 roomRoutes.patch('/changeGroupImage', multerMiddleware('avatar'), RoomController.changeGroupImage);
+roomRoutes.patch('/changeGroupName', RoomController.changeGroupName);
 
 export default roomRoutes;

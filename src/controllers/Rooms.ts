@@ -49,4 +49,18 @@ const changeGroupImage = async function (req: any, res: any) {
   }
 };
 
-export { getRooms, changeGroupImage };
+const changeGroupName = async function (req: any, res: any) {
+  const { newName, _id } = req.body;
+
+  try {
+    await Room.findByIdAndUpdate({ _id }, { room_name: newName }, { new: true });
+    return res.status(200).send({ message: 'Group name changed' });
+  } catch (err) {
+    logger.log({
+      level: 'error',
+      message: err,
+    });
+  }
+};
+
+export { getRooms, changeGroupImage, changeGroupName };
