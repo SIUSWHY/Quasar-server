@@ -5,6 +5,7 @@ import * as TeamController from '../controllers/Team';
 const roomRoutes = express.Router();
 
 roomRoutes.post('/create', multerMiddleware('avatar'), TeamController.createTeam);
-roomRoutes.post('/join', TeamController.joinToTeam);
+roomRoutes.patch('/join', TeamController.joinToTeam);
+roomRoutes.post('/all', TeamController.getTeams);
 
 export default roomRoutes;

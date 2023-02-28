@@ -29,7 +29,10 @@ const createTeam = async function (req: any, res: any) {
         teamName: data.name,
       });
 
-      await User.findByIdAndUpdate({ _id: data.userId }, { $push: { teams: newTeam._id } });
+      await User.findByIdAndUpdate(
+        { _id: data.userId },
+        { $push: { teams: newTeam._id }, $set: { defaultTeam: newTeam._id } }
+      );
 
       return res.status(200).send({ message: 'Team is created', newTeam });
     }
@@ -41,12 +44,19 @@ const createTeam = async function (req: any, res: any) {
   }
 };
 
-const joinToTeam = async function (res: any, req: any) {
+const joinToTeam = async function (req: any, res: any) {
   const { link, _id }: { _id: string; link: string } = req.body;
 
   try {
     const team = await Team.findOne({ inviteLink: link });
-    const user = await User.findByIdAndUpdate({ _id }, { $push: { teams: team._id } });
+    const user = await User.findById(_id);
+
+    if (user.defaultTeam == '' || undefined) {
+      await User.findByIdAndUpdate({ _id }, { $push: { teams: team._id }, $set: { defaultTeam: team._id } });
+    } else {
+      await User.findByIdAndUpdate({ _id }, { $push: { teams: team._id } });
+    }
+
     const newTeam = await Team.findByIdAndUpdate({ _id: team._id }, { $push: { members: user._id } }, { new: true });
 
     logger.log({
@@ -63,4 +73,23 @@ const joinToTeam = async function (res: any, req: any) {
   }
 };
 
-export { createTeam, joinToTeam };
+const getTeams = async function (req: any, res: any) {
+  const { ids }: { ids: string[] } = req.body;
+
+  try {
+    const arrTeams = await Promise.all(
+      ids.map(async (_id: string) => {
+        return await Team.findById(_id);
+      })
+    );
+
+    return res.status(200).send(arrTeams);
+  } catch (err) {
+    logger.log({
+      level: 'error',
+      message: err,
+    });
+  }
+};
+
+export { createTeam, joinToTeam, getTeams };

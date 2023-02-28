@@ -6,5 +6,6 @@ export interface UserType {
   phone: string;
   avatar: string;
   isDarkMode: boolean;
+  defaultTeam: string;
   teams: [];
 }
