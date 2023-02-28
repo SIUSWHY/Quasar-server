@@ -41,4 +41,26 @@ const createTeam = async function (req: any, res: any) {
   }
 };
 
-export { createTeam };
+const joinToTeam = async function (res: any, req: any) {
+  const { link, _id }: { _id: string; link: string } = req.body;
+
+  try {
+    const team = await Team.findOne({ inviteLink: link });
+    const user = await User.findByIdAndUpdate({ _id }, { $push: { teams: team._id } });
+    const newTeam = await Team.findByIdAndUpdate({ _id: team._id }, { $push: { members: user._id } }, { new: true });
+
+    logger.log({
+      level: 'info',
+      message: `User ${user.name}:[_id:${user._id}] is connect to ${team.teamName}`,
+    });
+
+    return res.status(200).send({ message: 'User is connected', newTeam });
+  } catch (err) {
+    logger.log({
+      level: 'error',
+      message: err,
+    });
+  }
+};
+
+export { createTeam, joinToTeam };
