@@ -9,7 +9,7 @@ const UserSchema = new Schema<UserType>({
   phone: String,
   defaultTeam: String,
   isDarkMode: { default: true, type: Boolean },
-  teams: [],
+  teams: Array<string>,
 });
 
 export default model<UserType>('Users', UserSchema);

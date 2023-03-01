@@ -7,5 +7,5 @@ export interface UserType {
   avatar: string;
   isDarkMode: boolean;
   defaultTeam: string;
-  teams: [];
+  teams: string[];
 }

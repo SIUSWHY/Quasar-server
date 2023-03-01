@@ -50,7 +50,7 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
 
     if (token !== 'null') {
       user = jwt.verify(token, process.env.JWT_KEY) as UserType;
-      room = { roomId: '', chatType: '', users_id: [] };
+      room = { roomId: '', chatType: '', users_id: [], teamId: '' };
 
       clients.set(user._id, socket.id);
 
@@ -68,6 +68,7 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
             roomId: makeIdForRoom(20).toString(),
             chatType: 'double',
             users_id: [user._id, data.companionId],
+            teamId: data.teamId,
           };
 
           room = await modelRoom.findOne({

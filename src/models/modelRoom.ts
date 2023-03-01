@@ -8,6 +8,7 @@ const RoomSchema = new Schema<RoomType>({
   room_img: { type: String, default: '' },
   room_name: { type: String, default: '' },
   adminUserId: String,
+  teamId: String,
 });
 
 export default model<RoomType>('Room', RoomSchema);

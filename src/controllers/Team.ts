@@ -51,10 +51,13 @@ const joinToTeam = async function (req: any, res: any) {
     const team = await Team.findOne({ inviteLink: link });
     const user = await User.findById(_id);
 
-    if (user.defaultTeam == '' || undefined) {
-      await User.findByIdAndUpdate({ _id }, { $push: { teams: team._id }, $set: { defaultTeam: team._id } });
+    if (user.defaultTeam === undefined) {
+      await User.findByIdAndUpdate(
+        { _id },
+        { $push: { teams: team._id.toString() }, $set: { defaultTeam: team._id.toString() } }
+      );
     } else {
-      await User.findByIdAndUpdate({ _id }, { $push: { teams: team._id } });
+      await User.findByIdAndUpdate({ _id }, { $push: { teams: team._id.toString() } });
     }
 
     const newTeam = await Team.findByIdAndUpdate({ _id: team._id }, { $push: { members: user._id } }, { new: true });

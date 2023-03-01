@@ -11,11 +11,19 @@ const user = async function (req: any, res: any) {
 
 const allUsers = async function (req: any, res: any) {
   const { _id } = req.data;
-  const UsersList: UserType[] = await Users.find({
+  const { teamId }: { teamId: string } = req.body;
+
+  const arrUser: UserType[] = await Users.find({
     _id: { $ne: _id },
   });
 
-  res.json(UsersList);
+  const teamUser = arrUser.map(user => {
+    if (user.teams.includes(teamId)) {
+      return user;
+    }
+  });
+
+  res.json(teamUser);
 };
 
 const currentUser = async function (req: any, res: any) {

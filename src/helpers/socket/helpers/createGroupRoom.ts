@@ -8,8 +8,9 @@ async function createGroupRoom(data: {
   groupMembers: ObjectId[];
   groupType: string;
   adminUserId: string;
+  teamId: string;
 }) {
-  const { groupName, groupImage, groupMembers, groupType, adminUserId } = data;
+  const { groupName, groupImage, groupMembers, groupType, adminUserId, teamId } = data;
 
   await modelRoom.create({
     roomId: makeIdForRoom(20).toString(),
@@ -18,6 +19,7 @@ async function createGroupRoom(data: {
     room_img: groupImage,
     room_name: groupName,
     adminUserId,
+    teamId,
   });
 }
 export default createGroupRoom;

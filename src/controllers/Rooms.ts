@@ -8,8 +8,8 @@ import { s3 } from '../helpers/storage';
 const s3_url = 'https://quasar-storage.storage.yandexcloud.net/avatars/';
 
 const getRooms = async function (req: any, res: any) {
-  const userId: ObjectId = req.body._id;
-  const Rooms = await Room.find({ users_id: userId }).populate('users_id');
+  const { _id, teamId } = req.body;
+  const Rooms = await Room.find({ $and: [{ users_id: _id }, { teamId }] }).populate('users_id');
 
   res.json(Rooms);
 };
