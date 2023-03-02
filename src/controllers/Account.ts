@@ -177,4 +177,19 @@ const deleteAccount = async function (req: any, res: any) {
   }
 };
 
-export { login, signUp, deleteAccount, changeUserAvatar, changeUserTheme };
+const changeDefaultTeam = async function (req: any, res: any) {
+  const { _id, teamId } = req.body;
+
+  try {
+    await User.findByIdAndUpdate({ _id }, { defaultTeam: teamId });
+
+    return res.status(200).send({ message: 'Change default team' });
+  } catch (err) {
+    logger.log({
+      level: 'error',
+      message: err,
+    });
+  }
+};
+
+export { login, signUp, deleteAccount, changeUserAvatar, changeUserTheme, changeDefaultTeam };

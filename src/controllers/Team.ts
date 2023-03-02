@@ -24,14 +24,14 @@ const createTeam = async function (req: any, res: any) {
       const newTeam = await Team.create({
         admin: data.userId,
         inviteLink: 'https://hermes-server.online/' + data.name.toLowerCase(),
-        members: [data.userId],
+        members: [data.userId.toString()],
         teamLogo: upload.Location,
         teamName: data.name,
       });
 
       await User.findByIdAndUpdate(
         { _id: data.userId },
-        { $push: { teams: newTeam._id }, $set: { defaultTeam: newTeam._id } }
+        { $push: { teams: newTeam._id.toString() }, $set: { defaultTeam: newTeam._id } }
       );
 
       return res.status(200).send({ message: 'Team is created', newTeam });
@@ -51,7 +51,7 @@ const joinToTeam = async function (req: any, res: any) {
     const team = await Team.findOne({ inviteLink: link });
     const user = await User.findById(_id);
 
-    if (user.defaultTeam === undefined) {
+    if (!Boolean(user.defaultTeam)) {
       await User.findByIdAndUpdate(
         { _id },
         { $push: { teams: team._id.toString() }, $set: { defaultTeam: team._id.toString() } }
@@ -60,7 +60,11 @@ const joinToTeam = async function (req: any, res: any) {
       await User.findByIdAndUpdate({ _id }, { $push: { teams: team._id.toString() } });
     }
 
-    const newTeam = await Team.findByIdAndUpdate({ _id: team._id }, { $push: { members: user._id } }, { new: true });
+    const newTeam = await Team.findByIdAndUpdate(
+      { _id: team._id },
+      { $push: { members: user._id.toString() } },
+      { new: true }
+    );
 
     logger.log({
       level: 'info',

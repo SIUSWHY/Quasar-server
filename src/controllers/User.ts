@@ -23,7 +23,7 @@ const allUsers = async function (req: any, res: any) {
     }
   });
 
-  res.json(teamUser);
+  res.status(200).send(teamUser.includes(undefined) ? [] : teamUser);
 };
 
 const currentUser = async function (req: any, res: any) {
