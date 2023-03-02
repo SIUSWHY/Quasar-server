@@ -3,6 +3,9 @@ import User from '../models/modelUser';
 import fs from 'fs';
 import { logger } from '../helpers/logger';
 import { s3 } from '../helpers/storage';
+import { TeamType } from '../types/teamType';
+
+const s3_url = 'https://quasar-storage.storage.yandexcloud.net/teams/';
 
 const createTeam = async function (req: any, res: any) {
   const data: { name: string; link: string; userId: string } = req.body;
@@ -99,4 +102,88 @@ const getTeams = async function (req: any, res: any) {
   }
 };
 
-export { createTeam, joinToTeam, getTeams };
+const changeTeamAvatar = async function (req: any, res: any) {
+  const { _id }: { _id: string } = req.body;
+
+  const team: TeamType = await Team.findById({ _id });
+  console.log('team', team);
+
+  if (Boolean(team)) {
+    try {
+      const img = fs.readFileSync(req.file!.path);
+
+      const upload = await s3.Upload(
+        {
+          buffer: img,
+        },
+        '/teams/'
+      );
+
+      await s3.Remove('teams/' + team.teamLogo.replace(s3_url, ''));
+
+      const patchTeam = await Team.findByIdAndUpdate({ _id }, { teamLogo: upload.Location }, { new: true });
+
+      console.log(patchTeam);
+
+      logger.log({
+        level: 'info',
+        message: `Change team avatar`,
+      });
+
+      res.status(200).send(patchTeam);
+    } catch (err) {
+      logger.log({
+        level: 'error',
+        message: err,
+      });
+    }
+  }
+};
+
+const changeTeamName = async function (req: any, res: any) {
+  const { _id, name } = req.body;
+
+  try {
+    const team = await Team.findByIdAndUpdate(
+      { _id },
+      { teamName: name, inviteLink: 'https://hermes-server.online/' + name.toLowerCase() },
+      { new: true }
+    );
+
+    return res.status(200).send(team);
+  } catch (err) {
+    logger.log({
+      level: 'error',
+      message: err,
+    });
+  }
+};
+
+const deleteUserFromTeam = async function (req: any, res: any) {
+  const { _id, teamId }: { _id: string; teamId: string } = req.body;
+
+  try {
+    const user = await User.findById({ _id });
+    const userWithoutTeam = user.teams.filter(elem => elem !== teamId);
+
+    if (user.defaultTeam === teamId) {
+      await User.findByIdAndUpdate({ _id }, { defaultTeam: '', teams: userWithoutTeam });
+    } else {
+      await User.findByIdAndUpdate({ _id }, { teams: userWithoutTeam });
+    }
+
+    const team = await Team.findById({ _id: teamId });
+    const newMembers = team.members.filter(elem => elem !== _id);
+
+    await Team.findByIdAndUpdate({ _id: teamId }, { members: newMembers }, { new: true });
+
+    return res.status(200).send({ message: 'User is deleted' });
+  } catch (err) {
+    logger.log({
+      level: 'error',
+      message: err,
+    });
+  }
+};
+
+export { createTeam, joinToTeam, getTeams, changeTeamAvatar, changeTeamName, deleteUserFromTeam };

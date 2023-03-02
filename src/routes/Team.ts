@@ -2,10 +2,13 @@ import express from 'express';
 import multerMiddleware from '../middleware/uploadSingleFile';
 import * as TeamController from '../controllers/Team';
 
-const roomRoutes = express.Router();
+const teamRoutes = express.Router();
 
-roomRoutes.post('/create', multerMiddleware('avatar'), TeamController.createTeam);
-roomRoutes.patch('/join', TeamController.joinToTeam);
-roomRoutes.post('/all', TeamController.getTeams);
+teamRoutes.post('/create', multerMiddleware('avatar'), TeamController.createTeam);
+teamRoutes.patch('/join', TeamController.joinToTeam);
+teamRoutes.post('/all', TeamController.getTeams);
+teamRoutes.patch('/changeAvatar', multerMiddleware('avatar'), TeamController.changeTeamAvatar);
+teamRoutes.patch('/changeName', TeamController.changeTeamName);
+teamRoutes.post('/deleteUser', TeamController.deleteUserFromTeam);
 
-export default roomRoutes;
+export default teamRoutes;
