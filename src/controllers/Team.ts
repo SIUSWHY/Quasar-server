@@ -4,6 +4,7 @@ import fs from 'fs';
 import { logger } from '../helpers/logger';
 import { s3 } from '../helpers/storage';
 import { TeamType } from '../types/teamType';
+import { UserType } from '../types/userType';
 
 const s3_url = 'https://quasar-storage.storage.yandexcloud.net/teams/';
 
@@ -26,7 +27,7 @@ const createTeam = async function (req: any, res: any) {
 
       const newTeam = await Team.create({
         admin: data.userId,
-        inviteLink: 'https://hermes-server.online/' + data.name.toLowerCase(),
+        inviteLink: 'h.me/hermes-server.online/' + data.name.toLowerCase(),
         members: [data.userId.toString()],
         teamLogo: upload.Location,
         teamName: data.name,
@@ -88,8 +89,8 @@ const getTeams = async function (req: any, res: any) {
 
   try {
     const arrTeams = await Promise.all(
-      ids.map(async (_id: string) => {
-        return await Team.findById(_id);
+      ids.map((_id: string) => {
+        return Team.findById(_id);
       })
     );
 
@@ -106,7 +107,6 @@ const changeTeamAvatar = async function (req: any, res: any) {
   const { _id }: { _id: string } = req.body;
 
   const team: TeamType = await Team.findById({ _id });
-  console.log('team', team);
 
   if (Boolean(team)) {
     try {
@@ -122,8 +122,6 @@ const changeTeamAvatar = async function (req: any, res: any) {
       await s3.Remove('teams/' + team.teamLogo.replace(s3_url, ''));
 
       const patchTeam = await Team.findByIdAndUpdate({ _id }, { teamLogo: upload.Location }, { new: true });
-
-      console.log(patchTeam);
 
       logger.log({
         level: 'info',
@@ -146,7 +144,7 @@ const changeTeamName = async function (req: any, res: any) {
   try {
     const team = await Team.findByIdAndUpdate(
       { _id },
-      { teamName: name, inviteLink: 'https://hermes-server.online/' + name.toLowerCase() },
+      { teamName: name, inviteLink: 'h.me/hermes-server.online/' + name.toLowerCase() },
       { new: true }
     );
 
@@ -178,6 +176,36 @@ const deleteUserFromTeam = async function (req: any, res: any) {
     await Team.findByIdAndUpdate({ _id: teamId }, { members: newMembers }, { new: true });
 
     return res.status(200).send({ message: 'User is deleted' });
+  } catch (err) {
+    logger.log({
+      level: 'error',
+      message: err,
+    });
+  }
+};
+
+const deleteTeam = async function (req: any, res: any) {
+  const { teamId } = req.body;
+
+  try {
+    const team = await Team.findById({ _id: teamId });
+    const users: UserType[] = await Promise.all(
+      team.members.map((_id: string) => {
+        return User.findById({ _id });
+      })
+    );
+
+    await Promise.all(
+      users.map(async elem => {
+        const user = await User.findById({ _id: elem._id });
+
+        if (user.defaultTeam === teamId) {
+          if (user.teams.length > 1) {
+            // const patchUser = User.findByIdAndUpdate({_id:elem._id},{defaultTeam:})
+          }
+        }
+      })
+    );
   } catch (err) {
     logger.log({
       level: 'error',

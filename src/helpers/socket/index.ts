@@ -150,6 +150,19 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
         createGroupRoom(data);
       });
 
+      socket.on('create_double_room', async data => {
+        const roomData: RoomType = {
+          roomId: makeIdForRoom(20).toString(),
+          chatType: 'double',
+          users_id: [user._id, data.companionId],
+          teamId: data.teamId,
+        };
+
+        await modelRoom.create(roomData);
+
+        socket.emit('room_created');
+      });
+
       callsLogic(socket, io, clients, user);
     }
   });
