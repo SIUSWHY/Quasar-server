@@ -1,12 +1,17 @@
 import Team from '../models/modelTeam';
 import User from '../models/modelUser';
+import Room from '../models/modelRoom';
+import Message from '../models/modelMessage';
 import fs from 'fs';
 import { logger } from '../helpers/logger';
 import { s3 } from '../helpers/storage';
 import { TeamType } from '../types/teamType';
 import { UserType } from '../types/userType';
+import { RoomType } from '../types/roomType';
+import { MessageType } from '../types/messageType';
 
 const s3_url = 'https://quasar-storage.storage.yandexcloud.net/teams/';
+const s3_room_url = 'https://quasar-storage.storage.yandexcloud.net/avatars/';
 
 const createTeam = async function (req: any, res: any) {
   const data: { name: string; link: string; userId: string } = req.body;
@@ -185,7 +190,7 @@ const deleteUserFromTeam = async function (req: any, res: any) {
 };
 
 const deleteTeam = async function (req: any, res: any) {
-  const { teamId } = req.body;
+  const { teamId }: { teamId: string } = req.body;
 
   try {
     const team = await Team.findById({ _id: teamId });
@@ -201,11 +206,37 @@ const deleteTeam = async function (req: any, res: any) {
 
         if (user.defaultTeam === teamId) {
           if (user.teams.length > 1) {
-            // const patchUser = User.findByIdAndUpdate({_id:elem._id},{defaultTeam:})
+            const teamList = user.teams.filter(id => id !== teamId);
+            await User.findByIdAndUpdate({ _id: elem._id }, { defaultTeam: teamList.pop(), teams: teamList });
+          } else {
+            await User.findByIdAndUpdate({ _id: elem._id }, { defaultTeam: '', teams: [] });
           }
+        } else {
+          const teamList = user.teams.filter(id => id !== teamId);
+          await User.findByIdAndUpdate({ _id: elem._id }, { teams: teamList });
         }
       })
     );
+
+    const rooms: RoomType[] = await Room.find({ teamId });
+    await Promise.all(
+      rooms.map(async room => {
+        await Message.deleteMany({ roomId: room.roomId });
+
+        await s3.Remove('avatars/' + room.room_img.replace(s3_room_url, ''));
+        await Room.deleteOne({ roomId: room.roomId });
+      })
+    );
+
+    await s3.Remove('teams/' + team.teamLogo.replace(s3_url, ''));
+    await Team.deleteOne({ _id: teamId });
+
+    logger.log({
+      level: 'info',
+      message: `Delete team`,
+    });
+
+    return res.status(200).send({ message: 'Team is deleted' });
   } catch (err) {
     logger.log({
       level: 'error',
@@ -214,4 +245,4 @@ const deleteTeam = async function (req: any, res: any) {
   }
 };
 
-export { createTeam, joinToTeam, getTeams, changeTeamAvatar, changeTeamName, deleteUserFromTeam };
+export { createTeam, joinToTeam, getTeams, changeTeamAvatar, changeTeamName, deleteUserFromTeam, deleteTeam };

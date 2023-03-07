@@ -17,13 +17,9 @@ const allUsers = async function (req: any, res: any) {
     _id: { $ne: _id },
   });
 
-  const teamUser = arrUser.map(user => {
-    if (user.teams.includes(teamId)) {
-      return user;
-    }
-  });
+  const teamUser = arrUser.filter(user => user.teams.includes(teamId));
 
-  res.status(200).send(teamUser.includes(undefined) ? [] : teamUser);
+  res.status(200).send(teamUser);
 };
 
 const currentUser = async function (req: any, res: any) {

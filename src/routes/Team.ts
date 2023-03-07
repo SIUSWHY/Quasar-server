@@ -11,6 +11,6 @@ teamRoutes.post('/all', authMiddleware, TeamController.getTeams);
 teamRoutes.patch('/changeAvatar', authMiddleware, multerMiddleware('avatar'), TeamController.changeTeamAvatar);
 teamRoutes.patch('/changeName', authMiddleware, TeamController.changeTeamName);
 teamRoutes.post('/deleteUser', authMiddleware, TeamController.deleteUserFromTeam);
-teamRoutes.post('/deleteTeam', authMiddleware, TeamController.deleteUserFromTeam);
+teamRoutes.post('/deleteTeam', authMiddleware, TeamController.deleteTeam);
 
 export default teamRoutes;
