@@ -9,6 +9,7 @@ accountRoutes.post('/signUp', multerMiddleware('avatar'), AccountController.sign
 accountRoutes.patch('/changeUserAvatar', multerMiddleware('avatar'), AccountController.changeUserAvatar);
 accountRoutes.patch('/changeUserTheme', AccountController.changeUserTheme);
 accountRoutes.patch('/changeDefaultTeam', AccountController.changeDefaultTeam);
+accountRoutes.patch('/changeDefaultLocale', AccountController.changeDefaultLocale);
 accountRoutes.post('/delete', AccountController.deleteAccount);
 
 export default accountRoutes;

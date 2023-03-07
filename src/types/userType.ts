@@ -8,4 +8,5 @@ export interface UserType {
   isDarkMode: boolean;
   defaultTeam: string;
   teams: string[];
+  locale:string
 }

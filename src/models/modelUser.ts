@@ -10,6 +10,7 @@ const UserSchema = new Schema<UserType>({
   defaultTeam: String,
   isDarkMode: { default: true, type: Boolean },
   teams: Array<string>,
+  locale: { default: 'en-US', type: String },
 });
 
 export default model<UserType>('Users', UserSchema);

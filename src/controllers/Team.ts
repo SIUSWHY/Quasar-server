@@ -8,9 +8,8 @@ import { s3 } from '../helpers/storage';
 import { TeamType } from '../types/teamType';
 import { UserType } from '../types/userType';
 import { RoomType } from '../types/roomType';
-import { MessageType } from '../types/messageType';
 
-const s3_url = 'https://quasar-storage.storage.yandexcloud.net/teams/';
+const s3_team_url = 'https://quasar-storage.storage.yandexcloud.net/teams/';
 const s3_room_url = 'https://quasar-storage.storage.yandexcloud.net/avatars/';
 
 const createTeam = async function (req: any, res: any) {
@@ -124,7 +123,7 @@ const changeTeamAvatar = async function (req: any, res: any) {
         '/teams/'
       );
 
-      await s3.Remove('teams/' + team.teamLogo.replace(s3_url, ''));
+      await s3.Remove('teams/' + team.teamLogo.replace(s3_team_url, ''));
 
       const patchTeam = await Team.findByIdAndUpdate({ _id }, { teamLogo: upload.Location }, { new: true });
 
@@ -228,7 +227,7 @@ const deleteTeam = async function (req: any, res: any) {
       })
     );
 
-    await s3.Remove('teams/' + team.teamLogo.replace(s3_url, ''));
+    await s3.Remove('teams/' + team.teamLogo.replace(s3_team_url, ''));
     await Team.deleteOne({ _id: teamId });
 
     logger.log({

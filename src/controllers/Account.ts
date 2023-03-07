@@ -192,4 +192,19 @@ const changeDefaultTeam = async function (req: any, res: any) {
   }
 };
 
-export { login, signUp, deleteAccount, changeUserAvatar, changeUserTheme, changeDefaultTeam };
+const changeDefaultLocale = async function (req: any, res: any) {
+  const { _id, locale } = req.body;
+
+  try {
+    await User.findByIdAndUpdate({ _id }, { locale });
+
+    return res.status(200).send({ message: 'Change default locale' });
+  } catch (err) {
+    logger.log({
+      level: 'error',
+      message: err,
+    });
+  }
+};
+
+export { login, signUp, deleteAccount, changeUserAvatar, changeUserTheme, changeDefaultTeam, changeDefaultLocale };
