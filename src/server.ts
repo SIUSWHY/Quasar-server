@@ -45,10 +45,15 @@ async function run() {
   app.use(express.json());
 
   await mongoose
-    .connect('mongodb+srv://quasarapp.ebpoijk.mongodb.net/QuasarMobileApp?retryWrites=true&w=majority', {
-      user: process.env.DB_USER,
-      pass: process.env.DB_PASS,
-    })
+    .connect(
+      `mongodb+srv://quasarapp.ebpoijk.mongodb.net/${
+        process.env.NODE_ENV === 'development' ? 'Dev' : 'QuasarMobileApp'
+      }?retryWrites=true&w=majority`,
+      {
+        user: process.env.DB_USER,
+        pass: process.env.DB_PASS,
+      }
+    )
     .then(() => {
       console.log('✅: Connection to the Atlas Cluster is successful!');
     })
