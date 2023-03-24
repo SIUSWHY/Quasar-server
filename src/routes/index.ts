@@ -6,6 +6,7 @@ import MessagesRotes from './Messages';
 import RoomRotes from './Room';
 import CallRotes from './Calls';
 import HealthRotes from './Health';
+import TeamRoutes from './Team';
 
 const routes = Router();
 
@@ -14,6 +15,7 @@ routes.use('/message', authMiddleware, MessagesRotes);
 routes.use('/room', authMiddleware, RoomRotes);
 routes.use('/call', authMiddleware, CallRotes);
 routes.use('/account', AccountRoutes);
+routes.use('/team', TeamRoutes);
 routes.use('/', HealthRotes);
 
 export default routes;

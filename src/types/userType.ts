@@ -4,9 +4,9 @@ export interface UserType {
   password: string;
   email: string;
   phone: string;
-  avatar: {
-    name: string;
-    desc: string;
-    img: { data: Buffer; contentType: String };
-  };
+  avatar: string;
+  isDarkMode: boolean;
+  defaultTeam: string;
+  teams: string[];
+  locale:string
 }

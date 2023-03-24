@@ -23,40 +23,38 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
     let user: any;
     let room: RoomType;
 
-    if (token === 'null') {
-      socket.on('is_user_need_qr', async () => {
-        let roomIdForAuthUser = makeIdForRoom(20);
-        await socket.join(roomIdForAuthUser);
+    socket.on('is_user_need_qr', async () => {
+      let roomIdForAuthUser = makeIdForRoom(20);
+      await socket.join(roomIdForAuthUser);
 
-        socket.emit('send_room_data_to_clent', {
-          socketId: roomIdForAuthUser,
-        });
+      socket.emit('send_room_data_to_clent', {
+        socketId: roomIdForAuthUser,
       });
+    });
 
-      socket.on('send_data_for_auth_user_by_qr', async (data: { socketId: string; userData: UserType }) => {
-        let token = await loginUserByQr(data);
-        token = token;
+    socket.on('send_data_for_auth_user_by_qr', async (data: { socketId: string; userData: UserType }) => {
+      let token = await loginUserByQr(data);
+      token = token;
 
-        await socket.join(data.socketId);
+      await socket.join(data.socketId);
 
-        io.to(data.socketId).emit('send_user_token_to_socket', {
-          token: token,
-          roomId: data.socketId,
-        });
+      io.to(data.socketId).emit('send_user_token_to_socket', {
+        token: token,
+        roomId: data.socketId,
       });
+    });
 
-      socket.on('destroy_room_for_auth_qr', data => {
-        socket.leave(data.roomId);
-      });
-    } else {
+    socket.on('destroy_room_for_auth_qr', data => {
+      socket.leave(data.roomId);
+    });
+
+    if (token !== 'null') {
       user = jwt.verify(token, process.env.JWT_KEY) as UserType;
-      room = { roomId: '', chatType: '', users_id: [] };
+      room = { roomId: '', chatType: '', users_id: [], teamId: '' };
 
       clients.set(user._id, socket.id);
 
       socket.on('get_room_id', data => {
-        console.log(data);
-
         if (!Boolean(data.roomId)) {
           return;
         }
@@ -70,6 +68,7 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
             roomId: makeIdForRoom(20).toString(),
             chatType: 'double',
             users_id: [user._id, data.companionId],
+            teamId: data.teamId,
           };
 
           room = await modelRoom.findOne({
@@ -102,21 +101,19 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
 
         if (data.message.url) {
           const { title, description, img } = await link_preview_generator(data.message.url);
-          const urlData = { title, description, img, url: data.message.url }
+          const urlData = { title, description, img, url: data.message.url };
 
-          const messText: string = data.message.messageText.pop()
-          const text = messText.replace(urlData.url, '')
+          const messText: string = data.message.messageText.pop();
+          const text = messText.replace(urlData.url, '');
 
           saveMessageToDb(data, room, text, urlData);
-          const message = { ...data.message, messageText: [text], urlData: urlData }
+          const message = { ...data.message, messageText: [text], urlData: urlData };
 
           io.to(room.roomId).emit('sent_message_to_room', { message });
         } else {
-          saveMessageToDb(data, room,);
+          saveMessageToDb(data, room);
           io.to(room.roomId).emit('sent_message_to_room', { message: data.message });
         }
-
-
 
         room.users_id.forEach(userId => {
           const userIdString = userId.toString();
@@ -142,15 +139,28 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
         console.log(`❌: ${user.name} - disconnected`);
       });
 
-      socket.on('user_is_logout',()=>{
+      socket.on('user_is_logout', () => {
         logger.log({
           level: 'info',
           message: `User ${user.name}:[_id:${user._id}] logout`,
         });
-      })
+      });
 
       socket.on('get_data_for_group', async data => {
         createGroupRoom(data);
+      });
+
+      socket.on('create_double_room', async data => {
+        const roomData: RoomType = {
+          roomId: makeIdForRoom(20).toString(),
+          chatType: 'double',
+          users_id: [user._id, data.companionId],
+          teamId: data.teamId,
+        };
+
+        await modelRoom.create(roomData);
+
+        socket.emit('room_created');
       });
 
       callsLogic(socket, io, clients, user);

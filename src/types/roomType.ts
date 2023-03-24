@@ -4,4 +4,6 @@ export interface RoomType {
   users_id: string[];
   room_name?: string;
   room_img?: string;
+  adminUserId?: string;
+  teamId: string;
 }

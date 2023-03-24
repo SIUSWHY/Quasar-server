@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-
 dotenv.config();
 
 import mongoose from 'mongoose';
@@ -28,6 +27,7 @@ async function run() {
   const httpServer = process.env.NODE_ENV === 'development' ? https.createServer(credentials, app) : createServer(app);
 
   const io = new Server(httpServer, {
+    path: '/socket/',
     cors: {
       origin: '*',
       methods: ['GET', 'POST'],
@@ -37,10 +37,15 @@ async function run() {
   const port = process.env.PORT || 3000;
 
   await mongoose
-    .connect('mongodb+srv://quasarapp.ebpoijk.mongodb.net/QuasarMobileApp?retryWrites=true&w=majority', {
-      user: process.env.DB_USER,
-      pass: process.env.DB_PASS,
-    })
+    .connect(
+      `mongodb+srv://quasarapp.ebpoijk.mongodb.net/${
+        process.env.NODE_ENV === 'development' ? 'Dev' : 'QuasarMobileApp'
+      }?retryWrites=true&w=majority`,
+      {
+        user: process.env.DB_USER,
+        pass: process.env.DB_PASS,
+      }
+    )
     .then(() => {
       console.log('✅: Connection to the Atlas Cluster is successful!');
     })
