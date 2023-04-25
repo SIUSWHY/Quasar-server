@@ -1,13 +1,17 @@
 import jwt from 'jsonwebtoken';
 
-function authMiddleware(req: any, _res: any, next: any) {
-  let token = req.headers.authorization?.split(' ').pop();
+function authMiddleware(req: any, res: any, next: any) {
+  let token = req.headers.cookie?.split('=').pop();
 
   // verify a token symmetric - synchronous
-  let decoded = jwt.verify(token, process.env.JWT_KEY);
-
-  req.data = decoded;
-  next();
+  jwt.verify(token, process.env.JWT_KEY, (err: any, decoded: string) => {
+    if (err) {
+      res.status(401).send(err.message);
+    } else {
+      req.data = decoded;
+      next();
+    }
+  });
 }
 
 export default authMiddleware;

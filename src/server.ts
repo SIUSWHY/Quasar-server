@@ -40,7 +40,12 @@ async function run() {
   });
   const port = process.env.PORT || 3000;
 
-  app.use(cors());
+  app.use(
+    cors({
+      origin: ['https://192.168.88.47:8080', 'https://hermes-server.online'],
+      credentials: true,
+    })
+  );
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(express.json());
 
