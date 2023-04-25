@@ -40,7 +40,7 @@ const login = async function (req: any, res: any) {
         message: `User ${user.name}:[_id:${user._id}] is signIn`,
       });
 
-      return res.status(200).send({ message: 'You login. Welcome', user, token });
+      return res.cookie('Token', token, { maxAge: 60 * 1000 }).send({ message: 'You login. Welcome', user, token });
     }
     return res.status(400).send({ message: 'User not found', type: 'negative' });
   } catch (error) {
