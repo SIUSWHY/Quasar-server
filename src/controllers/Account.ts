@@ -125,7 +125,7 @@ const changeUserAvatar = async function (req: any, res: any) {
   const { id }: { id: string } = req.body;
 
   const user: UserType = await User.findOne({
-    _id: id,
+    id,
   });
 
   if (Boolean(user)) {
