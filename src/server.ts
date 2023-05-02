@@ -15,6 +15,7 @@ import { loggerLogic } from './helpers/loggerLogic';
 import additionalRoutes from './routes/index';
 import cron from 'node-cron';
 import { logger } from './helpers/logger';
+import Mailer from './helpers/mailTransporter';
 
 async function run() {
   let credentials: { key: string; cert: string };
@@ -83,6 +84,10 @@ async function run() {
     console.log(`🔥: Example app listening on port ${port}!
   `)
   );
+
+  await Mailer.init();
+
+  // await Mailer.sendMessage('test@test.com', '123', '123', '123');
 }
 
 run();

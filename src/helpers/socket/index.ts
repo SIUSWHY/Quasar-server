@@ -14,6 +14,9 @@ import loginUserByQr from './helpers/loginUserByQR';
 import { MessageType } from '../../types/messageType';
 import link_preview_generator from 'link-preview-generator';
 import { logger } from '../logger';
+import Room from '../../models/modelRoom';
+import User from '../../models/modelUser';
+import Mailer from '../../helpers/mailTransporter';
 
 function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) {
   const clients = new Map<string, string>();
@@ -113,6 +116,22 @@ function socketLogic(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEvent
         } else {
           saveMessageToDb(data, room);
           io.to(room.roomId).emit('sent_message_to_room', { message: data.message });
+
+          const _room: RoomType = await Room.findOne({ roomId: room.roomId });
+          const ids = _room.users_id.filter(id => id.toString() !== user._id);
+
+          await Promise.all(
+            ids.map(async id => {
+              const _user = await User.findById({ _id: id });
+              await Mailer.sendMessage(
+                _user.email,
+                user.name,
+                data.message.messageText.pop(),
+                user.avatar,
+                data.message.stamp
+              );
+            })
+          );
         }
 
         room.users_id.forEach(userId => {
