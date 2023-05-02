@@ -164,6 +164,7 @@ class Mailer {
     const info = await this.transporter.sendMail({
       from: '"Hermes Server" <info@hermes.server.com>',
       to: email,
+      subject: 'Hermes',
       html,
     });
     console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
