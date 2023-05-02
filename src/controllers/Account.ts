@@ -27,11 +27,12 @@ const login = async function (req: any, res: any) {
     }
 
     if (user !== null) {
-      const { name, email, phone, _id } = user;
+      const { name, email, phone, _id, avatar } = user;
       const token = createToken({
         name,
         email,
         phone,
+        avatar,
         _id,
       });
 

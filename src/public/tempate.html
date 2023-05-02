@@ -68,6 +68,32 @@
       display: flex;
       justify-content: space-around;
     }
+
+    .avatar {
+      max-width: 32px;
+      max-height: 32px;
+      border-radius: 50%;
+    }
+
+    .username {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 14px !important;
+      font-weight: 600;
+      color: #3f4350 !important;
+      padding-right: 5px;
+    }
+
+    .info-container {
+      padding-bottom: 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    .time-stamp {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 12px !important;
+      color: rgba(63, 67, 80, 0.56) !important;
+    }
   </style>
 </head>
 
@@ -83,10 +109,13 @@
       </div>
       <div class="content-box">
         <div class="content">
-          <img alt="avatar" src=""></img>
+          <img class="avatar" alt="avatar" src=${imgHref}></img>
           <div class="text-content">
-            <div>name</div>
-            <div>text</div>
+            <div class="info-container">
+              <div class="username">${username}</div>
+              <div class="time-stamp">${_stamp}</div>
+            </div>
+            <div>${text}</div>
           </div>
         </div>
       </div>
