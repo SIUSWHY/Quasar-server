@@ -43,7 +43,7 @@ async function run() {
 
   app.use(
     cors({
-      origin: ['https://192.168.88.47:8080', 'https://hermes-server.online'],
+      origin: [process.env.DEV_API_URL, 'https://192.168.88.47:8080', 'https://hermes-server.online'],
       credentials: true,
     })
   );

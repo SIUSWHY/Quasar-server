@@ -4,11 +4,13 @@ export interface MessageType {
   userId: string;
   roomId: string;
   whoRead: [];
-  url?: string
+  type?: string;
+  url?: string;
   urlData?: {
     title: string;
     description: string;
     img: string;
     url: string;
-  }
+  };
+  fileUrl?: string;
 }
