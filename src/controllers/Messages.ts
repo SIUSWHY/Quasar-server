@@ -1,3 +1,5 @@
+import fs from 'fs';
+import { s3 } from '../helpers/storage';
 import Message from '../models/modelMessage';
 
 const unreadMessagesCount = async function (
@@ -34,7 +36,7 @@ const readMessages = async function (
       roomId: string;
     };
   },
-  _res: any,
+  _res: any
 ) {
   await Message.updateMany(
     {
@@ -44,4 +46,17 @@ const readMessages = async function (
   );
 };
 
-export { unreadMessagesCount, readMessages };
+const attachFile = async function (req: any, res: any) {
+  const img = fs.readFileSync(req.file!.path);
+
+  const upload = await s3.Upload(
+    {
+      buffer: img,
+    },
+    '/attach/'
+  );
+
+  return res.status(200).send(upload.Location);
+};
+
+export { unreadMessagesCount, readMessages, attachFile };
